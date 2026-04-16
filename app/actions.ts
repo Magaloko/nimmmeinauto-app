@@ -2,6 +2,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
+import { getSessionUser } from "@/lib/supabase-server";
 
 function getServiceClient() {
   return createClient(
@@ -29,9 +30,14 @@ export async function submitListing(data: {
   photo_urls?: string[];
 }) {
   const supabase = getServiceClient();
+  // Wenn ein User eingeloggt ist, verknüpfen wir das Inserat mit seinem Account.
+  // Gäste bleiben anonym erlaubt (user_id NULL).
+  const session = await getSessionUser();
+  const payload = session ? { ...data, user_id: session.id } : data;
+
   const { data: listing, error } = await supabase
     .from("listings")
-    .insert(data)
+    .insert(payload)
     .select("id")
     .single();
 
