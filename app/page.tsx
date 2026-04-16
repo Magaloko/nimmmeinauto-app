@@ -1,36 +1,156 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button, Card, CardContent } from "@/components/ui";
 import { Navbar } from "../components/navbar";
 import { BRANDS } from "@/lib/brands";
 import { FAQ } from "@/lib/faq";
 import { QuickEstimator } from "@/components/quick-estimator";
 import { BrandTicker } from "@/components/brand-ticker";
+import { WhySection } from "@/components/why-section";
 import { createClient } from "@supabase/supabase-js";
 
 export const revalidate = 3600; // refresh stats every hour
 
-async function getStats() {
+// ── Fallback curated listings (shown when DB has no photo listings) ────────
+const CURATED_LISTINGS = [
+  {
+    id: "curated-1",
+    make: "Volkswagen",
+    model: "Golf",
+    year: 2020,
+    estimated_value_eur: 17500,
+    photo_url:
+      "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=480&q=80",
+  },
+  {
+    id: "curated-2",
+    make: "BMW",
+    model: "3er",
+    year: 2019,
+    estimated_value_eur: 24900,
+    photo_url:
+      "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=480&q=80",
+  },
+  {
+    id: "curated-3",
+    make: "Audi",
+    model: "A4",
+    year: 2018,
+    estimated_value_eur: 22800,
+    photo_url:
+      "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=480&q=80",
+  },
+];
+
+interface LiveListing {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  estimated_value_eur: number;
+  photo_url: string;
+}
+
+interface StatsResult {
+  listings: number;
+  offers: number;
+  avgOffersPerListing: number;
+  totalValueEur: number;
+  liveListings: LiveListing[];
+}
+
+async function getStats(): Promise<StatsResult> {
   try {
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
-    const [{ count: listings }, { count: offers }] = await Promise.all([
+
+    const [
+      { count: listingsCount },
+      { count: offersCount },
+      { data: valueSumData },
+      { data: photoListings },
+    ] = await Promise.all([
       supabase.from("listings").select("*", { count: "exact", head: true }),
       supabase.from("offers").select("*", { count: "exact", head: true }),
+      supabase.from("listings").select("estimated_value_cents"),
+      supabase
+        .from("listings")
+        .select("id, make, model, year, estimated_value_cents, photo_urls")
+        .not("photo_urls", "is", null)
+        .neq("photo_urls", "[]")
+        .order("created_at", { ascending: false })
+        .limit(3),
     ]);
+
+    const listings = listingsCount ?? 0;
+    const offers = offersCount ?? 0;
+    const avgOffersPerListing =
+      listings > 0 ? Math.round((offers / listings) * 10) / 10 : 0;
+
+    const totalValueEur = valueSumData
+      ? valueSumData.reduce(
+          (sum: number, row: { estimated_value_cents: number | null }) =>
+            sum + (row.estimated_value_cents ?? 0),
+          0
+        ) / 100
+      : 0;
+
+    // Map photo listings to LiveListing shape
+    const liveListings: LiveListing[] =
+      photoListings && photoListings.length > 0
+        ? photoListings.map(
+            (row: {
+              id: string;
+              make: string;
+              model: string;
+              year: number;
+              estimated_value_cents: number | null;
+              photo_urls: string[] | null;
+            }) => ({
+              id: row.id,
+              make: row.make,
+              model: row.model,
+              year: row.year,
+              estimated_value_eur: (row.estimated_value_cents ?? 0) / 100,
+              photo_url: (row.photo_urls ?? [])[0] ?? "",
+            })
+          )
+        : [];
+
     return {
-      listings: listings ?? 0,
-      offers: offers ?? 0,
+      listings,
+      offers,
+      avgOffersPerListing,
+      totalValueEur,
+      liveListings,
     };
   } catch {
-    return { listings: 0, offers: 0 };
+    return {
+      listings: 0,
+      offers: 0,
+      avgOffersPerListing: 0,
+      totalValueEur: 0,
+      liveListings: [],
+    };
   }
 }
 
 export default async function HomePage() {
   const stats = await getStats();
   const faqTop = FAQ.slice(0, 5);
+
+  // Decide which listings to show in the Live-Beispiele section
+  const displayListings: LiveListing[] =
+    stats.liveListings.length > 0 ? stats.liveListings : CURATED_LISTINGS;
+
+  const whyStats = {
+    listings: stats.listings,
+    offers: stats.offers,
+    avgOffersPerListing: stats.avgOffersPerListing,
+    totalValueEur: stats.totalValueEur,
+  };
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -146,17 +266,30 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Stats bar (live from Supabase) ───────────────────── */}
+      {/* ── Stats bar (live from Supabase) — 4 metrics ───────── */}
       <section className="bg-[#1C1917] py-5 px-4 border-t border-white/5" aria-label="Plattform-Kennzahlen">
-        <div className="max-w-4xl mx-auto grid grid-cols-3 gap-6 text-center">
+        <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {[
             {
-              value: stats.listings > 0 ? `${stats.listings.toLocaleString("de-AT")}+` : "12.400+",
+              value:
+                stats.listings > 0
+                  ? `${stats.listings.toLocaleString("de-AT")}+`
+                  : "12.400+",
               label: "Fahrzeuge bewertet",
             },
             {
-              value: stats.offers > 0 ? `${stats.offers.toLocaleString("de-AT")}+` : "34.000+",
+              value:
+                stats.offers > 0
+                  ? `${stats.offers.toLocaleString("de-AT")}+`
+                  : "34.000+",
               label: "Händlerangebote",
+            },
+            {
+              value:
+                stats.avgOffersPerListing > 0
+                  ? `Ø ${stats.avgOffersPerListing.toLocaleString("de-AT")}`
+                  : "Ø 2,8",
+              label: "Angebote pro Inserat",
             },
             { value: "Ø 94%", label: "des Schätzpreises erzielt" },
           ].map(({ value, label }) => (
@@ -168,46 +301,97 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Why NimmMeinAuto ─────────────────────────────────── */}
-      <section className="py-20 px-4 bg-background">
+      {/* ── Live-Beispiele ───────────────────────────────────── */}
+      <section className="py-20 px-4 bg-background" aria-labelledby="live-beispiele-heading">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
-            <span className="inline-block bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-3">Warum NimmMeinAuto?</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Der einfachste Weg, dein Auto zu verkaufen</h2>
+          <div className="text-center mb-12">
+            <span className="inline-block bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-3">
+              Kürzlich bewertet
+            </span>
+            <h2
+              id="live-beispiele-heading"
+              className="text-3xl md:text-4xl font-bold text-foreground mb-3"
+            >
+              Echte Fahrzeuge von österreichischen Verkäufern
+            </h2>
             <p className="text-foreground-muted max-w-xl mx-auto">
-              Kein Stress mit Privatanzeigen. Keine Verhandlungen. Nur faire Preise.
+              Diese Fahrzeuge wurden kürzlich erfolgreich bewertet und Händlern angeboten.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            {[
-              {
-                icon: (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                ),
-                color: "bg-green-50 text-green-600",
-                title: "Kostenlos & unverbindlich",
-                desc: "Keine versteckten Gebühren. Die Bewertung und der Angebotsvergleich sind vollständig gratis.",
-              },
-              {
-                icon: (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                ),
-                color: "bg-amber/20 text-amber-dark",
-                title: "Beste Marktpreise",
-                desc: "Durch den Wettbewerb unter Händlern erzielst du durchschnittlich 94% des Marktpreises.",
-              },
-            ].map(({ icon, color, title, desc }) => (
-              <Card key={title} className="border transition-shadow hover:shadow-hover">
-                <CardContent className="p-8">
-                  <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center mb-5`}>{icon}</div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
-                  <p className="text-foreground-muted text-sm leading-relaxed">{desc}</p>
-                </CardContent>
-              </Card>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {displayListings.map((listing) => (
+              <div
+                key={listing.id}
+                className="group rounded-2xl overflow-hidden border border-border bg-white hover:shadow-hover transition-shadow duration-300"
+              >
+                {/* Photo */}
+                <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
+                  <Image
+                    src={listing.photo_url}
+                    alt={`${listing.make} ${listing.model} ${listing.year}`}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 640px) 100vw, 33vw"
+                  />
+                  {/* Make/model/year badge */}
+                  <div className="absolute top-3 left-3">
+                    <span className="inline-flex items-center gap-1.5 bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+                      {listing.make} {listing.model} · {listing.year}
+                    </span>
+                  </div>
+                  {/* Already evaluated label */}
+                  <div className="absolute top-3 right-3">
+                    <span className="inline-flex items-center gap-1 bg-green-500/90 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                      </svg>
+                      Bereits bewertet
+                    </span>
+                  </div>
+                </div>
+
+                {/* Card body */}
+                <div className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-semibold text-foreground text-sm">
+                        {listing.make} {listing.model}
+                      </div>
+                      <div className="text-foreground-muted text-xs mt-0.5">
+                        Baujahr {listing.year}
+                      </div>
+                    </div>
+                    {listing.estimated_value_eur > 0 && (
+                      <div className="text-right">
+                        <div className="text-amber-dark font-bold text-base">
+                          {listing.estimated_value_eur.toLocaleString("de-AT", {
+                            style: "currency",
+                            currency: "EUR",
+                            maximumFractionDigits: 0,
+                          })}
+                        </div>
+                        <div className="text-foreground-muted text-xs">Schätzwert</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             ))}
+          </div>
+
+          <div className="text-center mt-10">
+            <Link href="/auto-bewerten">
+              <Button className="bg-primary hover:bg-primary-dark text-white font-semibold px-8 h-11">
+                Mein Auto jetzt bewerten
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
+
+      {/* ── Why NimmMeinAuto (WhySection) ────────────────────── */}
+      <WhySection stats={whyStats} />
 
       {/* ── Testimonials ─────────────────────────────────────── */}
       <section className="py-20 px-4 bg-background">
