@@ -1,14 +1,115 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <!-- Background -->
-  <rect width="1200" height="630" fill="#ffffff"/>
+  <defs>
+    <!-- Dark background gradient -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#1C1917"/>
+      <stop offset="100%" stop-color="#0f0e0c"/>
+    </linearGradient>
+    <!-- Amber radial glow -->
+    <radialGradient id="amberGlow" cx="50%" cy="55%" r="45%">
+      <stop offset="0%"   stop-color="#F59E0B" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Left warm glow -->
+    <radialGradient id="leftGlow" cx="10%" cy="50%" r="40%">
+      <stop offset="0%"   stop-color="#F59E0B" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Horizontal gradient for top bar -->
+    <linearGradient id="barGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#F59E0B" stop-opacity="0"/>
+      <stop offset="30%"  stop-color="#F59E0B" stop-opacity="1"/>
+      <stop offset="70%"  stop-color="#F59E0B" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Horizontal gradient for bottom bar -->
+    <linearGradient id="barGradB" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#292524" stop-opacity="0"/>
+      <stop offset="30%"  stop-color="#292524" stop-opacity="1"/>
+      <stop offset="70%"  stop-color="#292524" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#292524" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
 
-  <!-- Logo text: nimm (black) + mein (amber) + auto (black) -->
-  <text x="600" y="295" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="120">
-    <tspan fill="#1C1917">nimm</tspan><tspan fill="#F59E0B">mein</tspan><tspan fill="#1C1917">auto</tspan>
+  <!-- ── Background ──────────────────────────────────────────── -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  <rect width="1200" height="630" fill="url(#amberGlow)"/>
+  <rect width="1200" height="630" fill="url(#leftGlow)"/>
+
+  <!-- ── Amber top accent bar ─────────────────────────────────── -->
+  <rect x="0" y="0" width="1200" height="5" fill="url(#barGrad)"/>
+
+  <!-- ── Subtle grid lines (background texture) ──────────────── -->
+  <line x1="0"    y1="157" x2="1200" y2="157" stroke="#292524" stroke-width="1" opacity="0.5"/>
+  <line x1="0"    y1="472" x2="1200" y2="472" stroke="#292524" stroke-width="1" opacity="0.5"/>
+  <line x1="300"  y1="0"   x2="300"  y2="630" stroke="#292524" stroke-width="1" opacity="0.3"/>
+  <line x1="900"  y1="0"   x2="900"  y2="630" stroke="#292524" stroke-width="1" opacity="0.3"/>
+
+  <!-- ── Corner brackets (top-left) ───────────────────────────── -->
+  <line x1="72" y1="72"  x2="72"  y2="130" stroke="#F59E0B" stroke-width="2.5" opacity="0.45" stroke-linecap="round"/>
+  <line x1="72" y1="72"  x2="130" y2="72"  stroke="#F59E0B" stroke-width="2.5" opacity="0.45" stroke-linecap="round"/>
+  <!-- top-right -->
+  <line x1="1128" y1="72"  x2="1128" y2="130" stroke="#F59E0B" stroke-width="2.5" opacity="0.45" stroke-linecap="round"/>
+  <line x1="1128" y1="72"  x2="1070" y2="72"  stroke="#F59E0B" stroke-width="2.5" opacity="0.45" stroke-linecap="round"/>
+  <!-- bottom-left -->
+  <line x1="72" y1="558" x2="72"  y2="500" stroke="#F59E0B" stroke-width="2.5" opacity="0.45" stroke-linecap="round"/>
+  <line x1="72" y1="558" x2="130" y2="558" stroke="#F59E0B" stroke-width="2.5" opacity="0.45" stroke-linecap="round"/>
+  <!-- bottom-right -->
+  <line x1="1128" y1="558" x2="1128" y2="500" stroke="#F59E0B" stroke-width="2.5" opacity="0.45" stroke-linecap="round"/>
+  <line x1="1128" y1="558" x2="1070" y2="558" stroke="#F59E0B" stroke-width="2.5" opacity="0.45" stroke-linecap="round"/>
+
+  <!-- ── Logo: nimm [white] + mein [amber] + auto [white] ──────── -->
+  <text x="600" y="320"
+        text-anchor="middle"
+        font-family="'Arial Black', 'Helvetica Neue', Arial, sans-serif"
+        font-weight="900"
+        font-size="128"
+        letter-spacing="-2">
+    <tspan fill="#F5F5F4">nimm</tspan><tspan fill="#F59E0B">mein</tspan><tspan fill="#F5F5F4">auto</tspan>
   </text>
 
-  <!-- Tagline: MODERN · MOBIL (amber) · MÜHELOS -->
-  <text x="600" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-weight="600" font-size="32" letter-spacing="6">
-    <tspan fill="#6B7280">MODERN  ·  </tspan><tspan fill="#F59E0B">MOBIL</tspan><tspan fill="#6B7280">  ·  MÜHELOS</tspan>
+  <!-- ── Amber underline under logo ───────────────────────────── -->
+  <rect x="320" y="342" width="560" height="3" fill="#F59E0B" opacity="0.30" rx="1.5"/>
+
+  <!-- ── Tagline ───────────────────────────────────────────────── -->
+  <text x="600" y="412"
+        text-anchor="middle"
+        font-family="'Arial', 'Helvetica Neue', sans-serif"
+        font-weight="400"
+        font-size="22"
+        letter-spacing="7">
+    <tspan fill="#78716C">MODERN</tspan>
+    <tspan fill="#57534E">  ·  </tspan>
+    <tspan fill="#F59E0B">MOBIL</tspan>
+    <tspan fill="#57534E">  ·  </tspan>
+    <tspan fill="#78716C">MÜHELOS</tspan>
+  </text>
+
+  <!-- ── Separator line ───────────────────────────────────────── -->
+  <rect x="0" y="490" width="1200" height="1" fill="url(#barGradB)"/>
+
+  <!-- ── Bottom: Austrian flag + domain ───────────────────────── -->
+  <!-- Flag -->
+  <rect x="490" y="526" width="40" height="5"  rx="1" fill="#ED2939"/>
+  <rect x="490" y="531" width="40" height="5"  rx="1" fill="#ffffff"/>
+  <rect x="490" y="536" width="40" height="5"  rx="1" fill="#ED2939"/>
+
+  <!-- Domain -->
+  <text x="542" y="539"
+        font-family="Arial, sans-serif"
+        font-size="19"
+        fill="#44403C"
+        letter-spacing="1">
+    nimmmeinauto.at
+  </text>
+
+  <!-- ── Tagline below domain ──────────────────────────────────── -->
+  <text x="600" y="572"
+        text-anchor="middle"
+        font-family="Arial, sans-serif"
+        font-size="15"
+        fill="#292524"
+        letter-spacing="1">
+    Österreichs schnellste Fahrzeugbewertung — kostenlos &amp; unverbindlich
   </text>
 </svg>
