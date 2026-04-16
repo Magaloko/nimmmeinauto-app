@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import type { CarSpecs } from "@/app/api/cars/specs/route";
 import { Button, Card, CardContent, Input, Label } from "@/components/ui";
 import { Navbar } from "../../components/navbar";
 import { submitListing } from "../actions";
@@ -282,6 +283,8 @@ export default function AutoBewertenPage() {
   const [vinOpen, setVinOpen] = useState(false);
   const [vinLoading, setVinLoading] = useState(false);
   const [vinResult, setVinResult] = useState<null | { label: string; type: 'success' | 'partial' | 'error'; specs?: string }>(null);
+  const [carSpecs, setCarSpecs] = useState<CarSpecs | null>(null);
+  const [specsLoading, setSpecsLoading] = useState(false);
   const [form, setForm] = useState<FormData>({
     make: "",
     model: "",
@@ -371,6 +374,31 @@ export default function AutoBewertenPage() {
       setVinLoading(false);
     }
   }
+
+  // Fetch vehicle specs from API Ninjas when make + model + year are all set
+  const fetchSpecs = useCallback(async (make: string, model: string, year: string) => {
+    if (!make || !model || !year) { setCarSpecs(null); return; }
+    setSpecsLoading(true);
+    try {
+      const params = new URLSearchParams({ make, model, year });
+      const res = await fetch(`/api/cars/specs?${params}`);
+      const data = await res.json() as CarSpecs | null;
+      setCarSpecs(data);
+    } catch {
+      setCarSpecs(null);
+    } finally {
+      setSpecsLoading(false);
+    }
+  }, []);
+
+  // Auto-trigger specs fetch whenever make + model + year are all filled
+  useEffect(() => {
+    if (form.make && form.model && form.year) {
+      fetchSpecs(form.make, form.model, form.year);
+    } else {
+      setCarSpecs(null);
+    }
+  }, [form.make, form.model, form.year, fetchSpecs]);
 
   function validateStep1(): boolean {
     const e: Record<string, string> = {};
@@ -615,6 +643,67 @@ export default function AutoBewertenPage() {
                   </select>
                   {errors.year && <p className="text-destructive text-xs">{errors.year}</p>}
                 </div>
+
+                {/* ─── API Ninjas Fahrzeugdaten-Karte ─────────────────── */}
+                {(specsLoading || carSpecs) && (
+                  <div className={`rounded-xl border overflow-hidden transition-all ${
+                    specsLoading ? 'border-border bg-muted/30 animate-pulse' : 'border-primary/20 bg-primary/5'
+                  }`}>
+                    {specsLoading ? (
+                      <div className="px-4 py-3 text-sm text-foreground-muted flex items-center gap-2">
+                        <svg className="w-4 h-4 animate-spin text-primary" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                        Fahrzeugdaten werden geladen…
+                      </div>
+                    ) : carSpecs && (
+                      <div className="p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <svg className="w-4 h-4 text-primary flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                          <span className="text-sm font-semibold text-primary">Technische Daten gefunden</span>
+                          {carSpecs.year && <span className="text-xs text-foreground-muted ml-auto">Datenjahr {carSpecs.year}</span>}
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          {carSpecs.vehicleClass && (
+                            <div className="bg-background rounded-lg p-2.5 text-center border border-border">
+                              <div className="text-xs text-foreground-muted mb-0.5">Klasse</div>
+                              <div className="text-xs font-semibold text-foreground">{carSpecs.vehicleClass}</div>
+                            </div>
+                          )}
+                          {(carSpecs.displacementL || carSpecs.cylinders) && (
+                            <div className="bg-background rounded-lg p-2.5 text-center border border-border">
+                              <div className="text-xs text-foreground-muted mb-0.5">Motor</div>
+                              <div className="text-xs font-semibold text-foreground">
+                                {carSpecs.displacementL ? `${carSpecs.displacementL}L` : ''}{carSpecs.cylinders ? ` · ${carSpecs.cylinders} Zyl.` : ''}
+                              </div>
+                            </div>
+                          )}
+                          {carSpecs.drive && (
+                            <div className="bg-background rounded-lg p-2.5 text-center border border-border">
+                              <div className="text-xs text-foreground-muted mb-0.5">Antrieb</div>
+                              <div className="text-xs font-semibold text-foreground">{carSpecs.drive}</div>
+                            </div>
+                          )}
+                          {carSpecs.consumption.combined && (
+                            <div className="bg-background rounded-lg p-2.5 text-center border border-border">
+                              <div className="text-xs text-foreground-muted mb-0.5">Verbrauch</div>
+                              <div className="text-xs font-semibold text-foreground">{carSpecs.consumption.combined} L/100km</div>
+                            </div>
+                          )}
+                        </div>
+                        {(carSpecs.consumption.urban || carSpecs.consumption.highway) && (
+                          <div className="flex gap-3 mt-2">
+                            {carSpecs.consumption.urban && (
+                              <span className="text-xs text-foreground-muted">Stadt: <strong>{carSpecs.consumption.urban}</strong></span>
+                            )}
+                            {carSpecs.consumption.highway && (
+                              <span className="text-xs text-foreground-muted">Autobahn: <strong>{carSpecs.consumption.highway}</strong></span>
+                            )}
+                            <span className="text-xs text-foreground-muted ml-auto">Quelle: EPA / API Ninjas</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <Label>Kraftstoff *</Label>
