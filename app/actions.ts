@@ -26,6 +26,7 @@ export async function submitListing(data: {
   email: string;
   postal_code: string;
   estimated_value_cents: number;
+  photo_urls?: string[];
 }) {
   const supabase = getServiceClient();
   const { data: listing, error } = await supabase

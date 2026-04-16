@@ -26,6 +26,7 @@ export type Listing = {
   estimated_value_cents: number;
   status: string;
   notes: string | null;
+  photo_urls: string[] | null;
 };
 
 export type Offer = {

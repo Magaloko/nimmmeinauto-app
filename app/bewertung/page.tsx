@@ -238,6 +238,36 @@ function BewertungContent() {
           </CardContent>
         </Card>
 
+        {/* Photos */}
+        {listing.photo_urls && listing.photo_urls.length > 0 && (
+          <Card className="shadow-card">
+            <CardContent className="p-6">
+              <h3 className="font-semibold text-lg text-foreground mb-4">
+                Fahrzeugfotos ({listing.photo_urls.length})
+              </h3>
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {listing.photo_urls.map((url, i) => (
+                  <a
+                    key={url}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block aspect-square rounded-lg overflow-hidden border border-border bg-stone-100 hover:opacity-90 transition-opacity"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={url}
+                      alt={`Fahrzeugfoto ${i + 1}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </a>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Dealer loading / offers */}
         <Card className="shadow-card">
           <CardContent className="p-6">
