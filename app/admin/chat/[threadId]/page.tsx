@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getSupabaseServer, getSessionUser } from "@/lib/supabase-server";
 import { createClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
+import { notifyNewMessage } from "@/lib/notify";
 
 export const dynamic = "force-dynamic";
 
@@ -107,6 +108,12 @@ export default async function AdminThreadPage({
               sender_id: me.id,
               body,
             });
+            // Notify the customer that the admin replied
+            notifyNewMessage({
+              sender_name: "Admin-Team",
+              body,
+              thread_id: threadId,
+            }).catch(console.error);
             revalidatePath(`/admin/chat/${threadId}`);
           }}
           className="flex gap-2"

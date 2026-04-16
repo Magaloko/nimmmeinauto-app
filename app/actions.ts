@@ -3,6 +3,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/supabase-server";
+import { notifyNewListing, notifyNewOffer } from "@/lib/notify";
 
 function getServiceClient() {
   return createClient(
@@ -30,8 +31,6 @@ export async function submitListing(data: {
   photo_urls?: string[];
 }) {
   const supabase = getServiceClient();
-  // Wenn ein User eingeloggt ist, verknüpfen wir das Inserat mit seinem Account.
-  // Gäste bleiben anonym erlaubt (user_id NULL).
   const session = await getSessionUser();
   const payload = session ? { ...data, user_id: session.id } : data;
 
@@ -42,6 +41,10 @@ export async function submitListing(data: {
     .single();
 
   if (error) throw new Error(error.message);
+
+  // Fire-and-forget: don't block the redirect on notification delivery.
+  notifyNewListing({ ...data, listingId: listing.id }).catch(console.error);
+
   redirect(`/bewertung?id=${listing.id}`);
 }
 
@@ -55,4 +58,6 @@ export async function submitOffer(data: {
   const supabase = getServiceClient();
   const { error } = await supabase.from("offers").insert(data);
   if (error) throw new Error(error.message);
+
+  notifyNewOffer(data).catch(console.error);
 }
