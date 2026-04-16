@@ -133,10 +133,10 @@ export default function HomePage() {
             <span className="inline-block bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-3">Warum NimmMeinAuto?</span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Der einfachste Weg, dein Auto zu verkaufen</h2>
             <p className="text-foreground-muted max-w-xl mx-auto">
-              Kein Stress mit Privatanzeigen. Keine Verhandlungen. Nur echte Angebote von geprüften Händlern.
+              Kein Stress mit Privatanzeigen. Keine Verhandlungen. Nur faire Preise.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {[
               {
                 icon: (
@@ -145,16 +145,6 @@ export default function HomePage() {
                 color: "bg-green-50 text-green-600",
                 title: "Kostenlos & unverbindlich",
                 desc: "Keine versteckten Gebühren. Die Bewertung und der Angebotsvergleich sind vollständig gratis.",
-                highlight: false,
-              },
-              {
-                icon: (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                ),
-                color: "bg-blue-50 text-blue-600",
-                title: "Geprüfte Händler",
-                desc: "Nur verifizierte Autohändler aus Österreich. Jeder Händler wird von uns geprüft, bevor er Angebote machen darf.",
-                highlight: true,
               },
               {
                 icon: (
@@ -163,10 +153,9 @@ export default function HomePage() {
                 color: "bg-amber/20 text-amber-dark",
                 title: "Beste Marktpreise",
                 desc: "Durch den Wettbewerb unter Händlern erzielst du durchschnittlich 94% des Marktpreises.",
-                highlight: false,
               },
-            ].map(({ icon, color, title, desc, highlight }) => (
-              <Card key={title} className={`border transition-shadow hover:shadow-hover ${highlight ? "border-primary/20 ring-1 ring-primary/10" : ""}`}>
+            ].map(({ icon, color, title, desc }) => (
+              <Card key={title} className="border transition-shadow hover:shadow-hover">
                 <CardContent className="p-8">
                   <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center mb-5`}>{icon}</div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
@@ -174,44 +163,6 @@ export default function HomePage() {
                 </CardContent>
               </Card>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── How it works ─────────────────────────────────────── */}
-      <section id="how" className="py-20 px-4 bg-surface-warm border-y border-border">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
-            <span className="inline-block bg-amber/20 text-amber-dark text-xs font-semibold px-3 py-1 rounded-full mb-3">So funktioniert&#39;s</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">In 4 Schritten zum besten Preis</h2>
-            <p className="text-foreground-muted">Schnell, einfach, sicher.</p>
-          </div>
-          <div className="relative">
-            {/* Connector line */}
-            <div className="hidden md:block absolute top-6 left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-primary/20 via-primary/60 to-primary/20" />
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              {[
-                { step: "01", title: "Auto beschreiben", desc: "Marke, Modell, Baujahr und Zustand – in 2 Minuten erledigt." },
-                { step: "02", title: "Schätzwert erhalten", desc: "Unser Algorithmus berechnet sofort deinen fairen Marktwert." },
-                { step: "03", title: "Angebote vergleichen", desc: "Innerhalb von 24h erhältst du echte Angebote von Händlern." },
-                { step: "04", title: "Besten Deal wählen", desc: "Wähle das beste Angebot. Abwicklung direkt mit dem Händler." },
-              ].map(({ step, title, desc }, i) => (
-                <div key={step} className="relative text-center">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-sm shadow-blue relative z-10 ${i === 3 ? "bg-amber text-foreground" : "bg-primary text-white"}`}>
-                    {step}
-                  </div>
-                  <h3 className="font-semibold text-foreground mb-2">{title}</h3>
-                  <p className="text-foreground-muted text-sm leading-relaxed">{desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="text-center mt-14">
-            <Link href="/auto-bewerten">
-              <Button size="lg" className="bg-primary hover:bg-primary-dark text-white font-semibold px-10 h-12 shadow-blue">
-                Jetzt kostenlos starten
-              </Button>
-            </Link>
           </div>
         </div>
       </section>
