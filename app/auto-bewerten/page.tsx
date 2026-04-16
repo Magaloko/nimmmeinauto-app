@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button, Card, CardContent, Input, Label } from "@/components/ui";
 import { Navbar } from "../../components/navbar";
 import { submitListing } from "../actions";
@@ -21,23 +21,6 @@ const BASE_PRICES: Record<string, Record<string, number>> = {
   "Renault": { "Clio": 1600000, "Megane": 1900000, "Kadjar": 2300000, "Zoe": 2100000 },
   "Peugeot": { "208": 1700000, "308": 2100000, "3008": 2800000, "5008": 3200000 },
   "Fiat": { "500": 1400000, "Punto": 1300000, "Tipo": 1600000, "Panda": 1200000 },
-};
-
-const MODELS: Record<string, string[]> = {
-  "BMW": ["1er", "3er", "5er", "X3", "X5"],
-  "Mercedes-Benz": ["A-Klasse", "C-Klasse", "E-Klasse", "GLC", "Sprinter"],
-  "Audi": ["A3", "A4", "A6", "Q3", "Q5"],
-  "Volkswagen": ["Golf", "Passat", "Tiguan", "Polo", "T-Roc"],
-  "Skoda": ["Octavia", "Fabia", "Superb", "Karoq", "Kodiaq"],
-  "Seat": ["Leon", "Ibiza", "Ateca", "Tarraco"],
-  "Ford": ["Focus", "Fiesta", "Kuga", "Mondeo"],
-  "Opel": ["Astra", "Corsa", "Insignia", "Mokka"],
-  "Toyota": ["Corolla", "Yaris", "RAV4", "C-HR"],
-  "Hyundai": ["i30", "i20", "Tucson", "Kona"],
-  "Kia": ["Sportage", "Ceed", "Sorento", "Stonic"],
-  "Renault": ["Clio", "Megane", "Kadjar", "Zoe"],
-  "Peugeot": ["208", "308", "3008", "5008"],
-  "Fiat": ["500", "Punto", "Tipo", "Panda"],
 };
 
 const CONDITION_FACTOR: Record<string, number> = {
@@ -82,7 +65,16 @@ interface FormData {
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: CURRENT_YEAR - 2009 }, (_, i) => String(CURRENT_YEAR - i));
-const MAKES = Object.keys(MODELS);
+
+// Curated Austrian-market makes list (ordered by popularity)
+const MAKES = [
+  'Volkswagen', 'BMW', 'Mercedes-Benz', 'Audi', 'Skoda', 'Ford',
+  'Opel', 'Toyota', 'Hyundai', 'Kia', 'Renault', 'Peugeot',
+  'Seat', 'Cupra', 'Citroën', 'Fiat', 'Alfa Romeo', 'Mazda',
+  'Honda', 'Nissan', 'Volvo', 'Jeep', 'Land Rover', 'Porsche',
+  'Tesla', 'MINI', 'Suzuki', 'Dacia', 'Mitsubishi', 'Subaru',
+  'Lexus', 'Jaguar', 'Smart', 'Saab', 'Lancia', 'Chrysler',
+];
 
 const conditionOptions = [
   {
@@ -131,6 +123,8 @@ export default function AutoBewertenPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [models, setModels] = useState<string[]>([]);
+  const [loadingModels, setLoadingModels] = useState(false);
   const [form, setForm] = useState<FormData>({
     make: "",
     model: "",
@@ -153,6 +147,20 @@ export default function AutoBewertenPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => { const next = { ...prev }; delete next[field]; return next; });
   }
+
+  const fetchModels = useCallback(async (make: string) => {
+    if (!make) { setModels([]); return; }
+    setLoadingModels(true);
+    try {
+      const res = await fetch(`/api/cars/models?make=${encodeURIComponent(make)}`);
+      const data = await res.json() as string[];
+      setModels(Array.isArray(data) ? data : []);
+    } catch {
+      setModels([]);
+    } finally {
+      setLoadingModels(false);
+    }
+  }, []);
 
   function validateStep1(): boolean {
     const e: Record<string, string> = {};
@@ -295,7 +303,7 @@ export default function AutoBewertenPage() {
                     <select
                       id="make"
                       value={form.make}
-                      onChange={(e) => { set("make", e.target.value); set("model", ""); }}
+                      onChange={(e) => { set("make", e.target.value); set("model", ""); fetchModels(e.target.value); }}
                       className="w-full h-10 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="">Marke wählen</option>
@@ -310,11 +318,11 @@ export default function AutoBewertenPage() {
                       id="model"
                       value={form.model}
                       onChange={(e) => set("model", e.target.value)}
-                      disabled={!form.make}
+                      disabled={!form.make || loadingModels}
                       className="w-full h-10 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
                     >
-                      <option value="">Modell wählen</option>
-                      {(MODELS[form.make] ?? []).map((m) => <option key={m} value={m}>{m}</option>)}
+                      <option value="">{loadingModels ? 'Lade Modelle...' : 'Modell wählen'}</option>
+                      {models.map((m) => <option key={m} value={m}>{m}</option>)}
                     </select>
                     {errors.model && <p className="text-destructive text-xs">{errors.model}</p>}
                   </div>
