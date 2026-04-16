@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { ContactWidget } from "@/components/contact-widget";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -39,7 +40,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="de">
-      <body className={`${jakarta.variable} font-sans antialiased`}>{children}</body>
+      <body className={`${jakarta.variable} font-sans antialiased`}>
+        {children}
+        <ContactWidget />
+      </body>
     </html>
   );
 }
