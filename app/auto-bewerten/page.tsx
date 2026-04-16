@@ -936,9 +936,9 @@ export default function AutoBewertenPage() {
                   />
                   <Label htmlFor="agb" className="cursor-pointer text-sm font-normal leading-relaxed text-foreground">
                     Ich stimme den{" "}
-                    <a href="#" className="text-primary underline">Allgemeinen Geschäftsbedingungen</a>{" "}
+                    <a href="/agb" target="_blank" rel="noopener noreferrer" className="text-primary underline">Allgemeinen Geschäftsbedingungen</a>{" "}
                     und der{" "}
-                    <a href="#" className="text-primary underline">Datenschutzerklärung</a>{" "}
+                    <a href="/datenschutz" target="_blank" rel="noopener noreferrer" className="text-primary underline">Datenschutzerklärung</a>{" "}
                     zu.
                   </Label>
                 </div>
