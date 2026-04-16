@@ -87,6 +87,16 @@ export default async function BrandPage({
             <span className="mx-2">/</span>
             <span className="text-white">{brand.name}</span>
           </nav>
+          {brand.hasLogo && (
+            <div className="mb-6 inline-flex items-center justify-center h-16 px-5 bg-white/95 rounded-xl shadow-soft">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/logos/${brand.slug}.svg`}
+                alt={`${brand.name} Logo`}
+                className="h-10 w-auto object-contain"
+              />
+            </div>
+          )}
           <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-5 tracking-tight">
             {brand.name} verkaufen<br />
             <span className="text-amber">fair bewertet, schnell verkauft.</span>

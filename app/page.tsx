@@ -304,9 +304,28 @@ export default async function HomePage() {
               <Link
                 key={b.slug}
                 href={`/auto-bewerten/${b.slug}`}
-                className="px-4 py-3 rounded-lg bg-white border border-border hover:border-primary hover:shadow-soft transition-all text-center text-sm font-semibold text-foreground"
+                className="group flex flex-col items-center justify-center gap-2 px-3 py-4 rounded-lg bg-white border border-border hover:border-primary hover:shadow-soft transition-all"
+                aria-label={`${b.name} bewerten`}
               >
-                {b.name}
+                {b.hasLogo ? (
+                  <span className="h-10 flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/logos/${b.slug}.svg`}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      className="max-h-10 max-w-[72px] object-contain transition-transform group-hover:scale-105"
+                    />
+                  </span>
+                ) : (
+                  <span className="h-10 flex items-center justify-center text-lg font-bold text-foreground/60">
+                    {b.name}
+                  </span>
+                )}
+                <span className="text-xs font-semibold text-foreground text-center">
+                  {b.name}
+                </span>
               </Link>
             ))}
           </div>
