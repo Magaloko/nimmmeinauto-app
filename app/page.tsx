@@ -3,6 +3,7 @@ import { Button, Card, CardContent } from "@/components/ui";
 import { Navbar } from "../components/navbar";
 import { BRANDS } from "@/lib/brands";
 import { FAQ } from "@/lib/faq";
+import { QuickEstimator } from "@/components/quick-estimator";
 import { createClient } from "@supabase/supabase-js";
 
 export const revalidate = 3600; // refresh stats every hour
@@ -136,43 +137,9 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Right: animated value card */}
-            <div className="hidden md:block">
-              <div className="bg-[#292524]/80 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-2xl ring-1 ring-amber/10">
-                <div className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">Beispiel-Bewertung</div>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
-                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 17H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1l3-4h8l3 4h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-5"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-white">VW Golf 2020</div>
-                    <div className="text-stone-400 text-sm">45.000 km · Gut</div>
-                  </div>
-                </div>
-                <div className="bg-black/20 rounded-xl p-4 mb-4 border border-white/5">
-                  <div className="text-stone-400 text-xs mb-1">Geschätzter Marktwert</div>
-                  <div className="text-3xl font-bold text-amber">€ 17.200</div>
-                  <div className="text-stone-400 text-xs mt-1">Spanne: € 15.500 – € 18.900</div>
-                </div>
-                <div className="space-y-2">
-                  {[
-                    { dealer: "Autohaus Müller Wien", amount: "€ 16.800", pct: "98%", color: "bg-green-500" },
-                    { dealer: "Fahrzeugcenter Graz", amount: "€ 16.100", pct: "94%", color: "bg-blue-500" },
-                    { dealer: "AutoGroup Salzburg", amount: "€ 15.500", pct: "90%", color: "bg-purple-500" },
-                  ].map((o) => (
-                    <div key={o.dealer} className="flex items-center justify-between bg-black/15 rounded-lg px-3 py-2 border border-white/5">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${o.color}`} />
-                        <span className="text-xs text-stone-300">{o.dealer}</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-xs font-bold text-white">{o.amount}</span>
-                        <span className="text-stone-500 text-xs ml-1">{o.pct}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            {/* Right: interactive quick estimator */}
+            <div className="hidden md:flex justify-end">
+              <QuickEstimator />
             </div>
           </div>
         </div>
