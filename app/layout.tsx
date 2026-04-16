@@ -22,20 +22,11 @@ export const metadata: Metadata = {
     siteName: "NimmMeinAuto",
     locale: "de_AT",
     type: "website",
-    images: [
-      {
-        url: "/og-image.svg",
-        width: 1200,
-        height: 630,
-        alt: "NimmMeinAuto – modern · mobil · mühelos",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "NimmMeinAuto – Auto verkaufen leicht gemacht",
     description: "Kostenlose Bewertung in 2 Minuten. Echte Händlerangebote.",
-    images: ["/og-image.svg"],
   },
 };
 
