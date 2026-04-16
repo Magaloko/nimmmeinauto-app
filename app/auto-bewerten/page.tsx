@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button, Card, CardContent, Input, Label } from "@/components/ui";
 import { Navbar } from "../../components/navbar";
+import { submitListing } from "../actions";
 
 // ─── Valuation engine ───────────────────────────────────────────────────────
 const BASE_PRICES: Record<string, Record<string, number>> = {
@@ -100,9 +100,10 @@ const fuelOptions = [
 ];
 
 export default function AutoBewertenPage() {
-  const router = useRouter();
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [form, setForm] = useState<FormData>({
     make: "",
     model: "",
@@ -163,10 +164,13 @@ export default function AutoBewertenPage() {
     setStep((s) => s + 1);
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!validateStep4()) return;
 
-    const value = calcValue(
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    const estimated_value_cents = calcValue(
       form.make,
       form.model,
       Number(form.year),
@@ -174,9 +178,28 @@ export default function AutoBewertenPage() {
       form.condition
     );
 
-    const listing = { ...form, value, createdAt: new Date().toISOString() };
-    localStorage.setItem("nimm_listing", JSON.stringify(listing));
-    router.push("/bewertung");
+    try {
+      await submitListing({
+        make: form.make,
+        model: form.model,
+        year: Number(form.year),
+        mileage: Number(form.mileage),
+        fuel: form.fuel,
+        transmission: form.transmission,
+        condition: form.condition,
+        has_accident_history: form.hasAccident,
+        tuv_date: form.nextTuev || undefined,
+        first_name: form.firstName,
+        last_name: form.lastName,
+        phone: form.phone,
+        email: form.email,
+        postal_code: form.plz,
+        estimated_value_cents,
+      });
+    } catch (err) {
+      setSubmitError("Fehler beim Speichern. Bitte erneut versuchen.");
+      setIsSubmitting(false);
+    }
   }
 
   const progressPct = (step / 4) * 100;
@@ -514,7 +537,7 @@ export default function AutoBewertenPage() {
             {/* Navigation */}
             <div className="flex justify-between mt-8 pt-6 border-t border-border">
               {step > 1 ? (
-                <Button variant="outline" onClick={() => setStep((s) => s - 1)}>
+                <Button variant="outline" onClick={() => setStep((s) => s - 1)} disabled={isSubmitting}>
                   ← Zurück
                 </Button>
               ) : (
@@ -539,9 +562,17 @@ export default function AutoBewertenPage() {
               )}
 
               {step === 4 && (
-                <Button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700 text-white">
-                  Bewertung berechnen →
-                </Button>
+                <div className="flex flex-col items-end gap-2">
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    size="lg"
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    {isSubmitting ? "Wird gespeichert..." : "Bewertung berechnen →"}
+                  </Button>
+                  {submitError && <p className="text-red-500 text-sm">{submitError}</p>}
+                </div>
               )}
             </div>
           </CardContent>

@@ -4,20 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from "@/components/ui";
 import { Navbar } from "../../components/navbar";
+import { supabase, type Listing, type Offer } from "@/lib/supabase";
 
-interface ListingData {
-  make: string;
-  model: string;
-  year: string;
-  fuel: string;
-  mileage: string;
-  condition: string;
-  firstName: string;
-  lastName: string;
-  plz: string;
-  value: number;
-  createdAt?: string;
-}
+type ListingWithOffers = Listing & { offers: Offer[] };
 
 const conditionLabels: Record<string, string> = {
   EXCELLENT: "Sehr gut",
@@ -38,50 +27,25 @@ function formatEur(cents: number): string {
   return (cents / 100).toLocaleString("de-AT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 }
 
-const MOCK_LISTING: ListingData = {
-  make: "Volkswagen",
-  model: "Golf",
-  year: "2019",
-  fuel: "benzin",
-  mileage: "82000",
-  condition: "GOOD",
-  firstName: "Max",
-  lastName: "Mustermann",
-  plz: "1010",
-  value: 1540000,
-  createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-};
-
-const MOCK_OFFERS = [
-  { dealer: "Autohaus Müller Wien", amount: 1416800, status: "ANGENOMMEN" as const },
-  { dealer: "Fahrzeugcenter Graz GmbH", amount: 1355200, status: "AUSSTEHEND" as const },
-  { dealer: "AutoGroup Salzburg", amount: 1309000, status: "AUSSTEHEND" as const },
-];
-
 export default function SellerPage() {
-  const [listing, setListing] = useState<ListingData | null>(null);
+  const [listings, setListings] = useState<ListingWithOffers[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("nimm_listing");
-      setListing(raw ? (JSON.parse(raw) as ListingData) : MOCK_LISTING);
-    } catch {
-      setListing(MOCK_LISTING);
+    async function load() {
+      const { data } = await supabase
+        .from("listings")
+        .select("*, offers(*)")
+        .order("created_at", { ascending: false })
+        .limit(10);
+      setListings((data as ListingWithOffers[]) ?? []);
+      setLoading(false);
     }
+    load();
   }, []);
 
-  const data = listing ?? MOCK_LISTING;
-  const createdDate = data.createdAt
-    ? new Date(data.createdAt).toLocaleDateString("de-AT", { day: "2-digit", month: "2-digit", year: "numeric" })
-    : "—";
-
-  const offers = listing
-    ? [
-        { dealer: "Autohaus Müller Wien", amount: Math.round(listing.value * 0.92), status: "ANGENOMMEN" as const },
-        { dealer: "Fahrzeugcenter Graz GmbH", amount: Math.round(listing.value * 0.88), status: "AUSSTEHEND" as const },
-        { dealer: "AutoGroup Salzburg", amount: Math.round(listing.value * 0.85), status: "AUSSTEHEND" as const },
-      ]
-    : MOCK_OFFERS;
+  const totalOffers = listings.reduce((sum, l) => sum + (l.offers?.length ?? 0), 0);
+  const activeListings = listings.filter((l) => l.status === "ACTIVE").length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -103,111 +67,141 @@ export default function SellerPage() {
         <div className="grid grid-cols-3 gap-4 mb-8">
           <Card>
             <CardContent className="p-5 text-center">
-              <div className="text-3xl font-bold text-primary">1</div>
+              <div className="text-3xl font-bold text-primary">{loading ? "—" : activeListings}</div>
               <div className="text-sm text-muted-foreground mt-1">Aktive Inserate</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-5 text-center">
-              <div className="text-3xl font-bold text-green-600">3</div>
+              <div className="text-3xl font-bold text-green-600">{loading ? "—" : totalOffers}</div>
               <div className="text-sm text-muted-foreground mt-1">Angebote erhalten</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-5 text-center">
-              <div className="text-3xl font-bold text-foreground">{formatEur(data.value)}</div>
-              <div className="text-sm text-muted-foreground mt-1">Geschätzter Wert</div>
+              <div className="text-3xl font-bold text-foreground">{loading ? "—" : listings.length}</div>
+              <div className="text-sm text-muted-foreground mt-1">Inserate gesamt</div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Listing card */}
-        <Card className="mb-6 border-l-4 border-l-green-500">
-          <CardHeader className="pb-3">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="flex items-center gap-3 mb-1">
-                  <CardTitle className="text-xl">
-                    {data.make} {data.model} {data.year}
-                  </CardTitle>
-                  <Badge className="bg-green-100 text-green-700 border-0 text-xs">AKTIV</Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Inserat erstellt am {createdDate} · PLZ {data.plz}
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-green-600">{formatEur(data.value)}</div>
-                <div className="text-xs text-muted-foreground">Schätzwert</div>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="flex flex-wrap gap-2 mb-5">
-              <Badge className="bg-gray-100 text-gray-700 border-0">{Number(data.mileage).toLocaleString("de-AT")} km</Badge>
-              <Badge className="bg-gray-100 text-gray-700 border-0">{conditionLabels[data.condition] ?? data.condition}</Badge>
-              <Badge className="bg-gray-100 text-gray-700 border-0">{fuelLabels[data.fuel] ?? data.fuel}</Badge>
-            </div>
+        {loading && (
+          <div className="text-center py-16 text-muted-foreground">
+            <div className="text-3xl mb-3">⏳</div>
+            <p>Lade Inserate...</p>
+          </div>
+        )}
 
-            {/* Offers table */}
-            <div className="border border-border rounded-lg overflow-hidden">
-              <div className="bg-gray-50 px-4 py-3 border-b border-border flex items-center justify-between">
-                <span className="font-semibold text-sm">Händlerangebote</span>
-                <Badge className="bg-blue-100 text-blue-700 border-0">{offers.length} Angebote</Badge>
-              </div>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gray-50 border-b border-border">
-                    <th className="text-left px-4 py-2 text-muted-foreground font-medium">Händler</th>
-                    <th className="text-right px-4 py-2 text-muted-foreground font-medium">Angebot</th>
-                    <th className="text-center px-4 py-2 text-muted-foreground font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {offers.map((offer) => (
-                    <tr key={offer.dealer} className="border-b border-border last:border-0 hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 font-medium">{offer.dealer}</td>
-                      <td className="px-4 py-3 text-right font-semibold text-green-600">{formatEur(offer.amount)}</td>
-                      <td className="px-4 py-3 text-center">
-                        {offer.status === "ANGENOMMEN" ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-medium">
-                            ✓ ANGENOMMEN
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 text-xs font-medium">
-                            ⏳ AUSSTEHEND
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex gap-3 mt-5">
-              <Link href="/bewertung">
-                <Button variant="outline" size="sm">Angebote ansehen</Button>
+        {!loading && listings.length === 0 && (
+          <Card className="text-center py-16">
+            <CardContent>
+              <div className="text-4xl mb-4">🚗</div>
+              <h3 className="text-xl font-semibold mb-2">Noch keine Inserate</h3>
+              <p className="text-muted-foreground mb-6">Erstelle dein erstes Inserat und erhalte Angebote von Händlern.</p>
+              <Link href="/auto-bewerten">
+                <Button>Jetzt Fahrzeug bewerten</Button>
               </Link>
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-destructive border-destructive/30 hover:bg-destructive/10"
-                onClick={() => {
-                  if (confirm("Inserat wirklich löschen?")) {
-                    localStorage.removeItem("nimm_listing");
-                    setListing(null);
-                  }
-                }}
-              >
-                Inserat löschen
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
+
+        {!loading && listings.length > 0 && (
+          <div className="space-y-6">
+            {listings.map((listing) => {
+              const createdDate = new Date(listing.created_at).toLocaleDateString("de-AT", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              });
+              const offerCount = listing.offers?.length ?? 0;
+
+              return (
+                <Card key={listing.id} className="border-l-4 border-l-green-500">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="flex items-center gap-3 mb-1">
+                          <CardTitle className="text-xl">
+                            {listing.make} {listing.model} {listing.year}
+                          </CardTitle>
+                          <Badge className={`border-0 text-xs ${listing.status === "ACTIVE" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}>
+                            {listing.status}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Inserat erstellt am {createdDate} · PLZ {listing.postal_code}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-green-600">{formatEur(listing.estimated_value_cents)}</div>
+                        <div className="text-xs text-muted-foreground">Schätzwert</div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="flex flex-wrap gap-2 mb-5">
+                      <Badge className="bg-gray-100 text-gray-700 border-0">{listing.mileage.toLocaleString("de-AT")} km</Badge>
+                      <Badge className="bg-gray-100 text-gray-700 border-0">{conditionLabels[listing.condition] ?? listing.condition}</Badge>
+                      <Badge className="bg-gray-100 text-gray-700 border-0">{fuelLabels[listing.fuel] ?? listing.fuel}</Badge>
+                      {listing.has_accident_history && <Badge className="bg-red-100 text-red-700 border-0">Unfallfahrzeug</Badge>}
+                    </div>
+
+                    {/* Offers table */}
+                    {offerCount > 0 ? (
+                      <div className="border border-border rounded-lg overflow-hidden">
+                        <div className="bg-gray-50 px-4 py-3 border-b border-border flex items-center justify-between">
+                          <span className="font-semibold text-sm">Händlerangebote</span>
+                          <Badge className="bg-blue-100 text-blue-700 border-0">{offerCount} Angebote</Badge>
+                        </div>
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="bg-gray-50 border-b border-border">
+                              <th className="text-left px-4 py-2 text-muted-foreground font-medium">Händler</th>
+                              <th className="text-right px-4 py-2 text-muted-foreground font-medium">Angebot</th>
+                              <th className="text-center px-4 py-2 text-muted-foreground font-medium">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {listing.offers.map((offer) => (
+                              <tr key={offer.id} className="border-b border-border last:border-0 hover:bg-gray-50 transition-colors">
+                                <td className="px-4 py-3 font-medium">{offer.dealer_name}</td>
+                                <td className="px-4 py-3 text-right font-semibold text-green-600">{formatEur(offer.amount_cents)}</td>
+                                <td className="px-4 py-3 text-center">
+                                  {offer.status === "ACCEPTED" ? (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+                                      ✓ ANGENOMMEN
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 text-xs font-medium">
+                                      ⏳ AUSSTEHEND
+                                    </span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="text-sm text-muted-foreground text-center py-4 border border-dashed border-border rounded-lg">
+                        Noch keine Angebote — Händler werden benachrichtigt.
+                      </div>
+                    )}
+
+                    <div className="flex gap-3 mt-5">
+                      <Link href={`/bewertung?id=${listing.id}`}>
+                        <Button variant="outline" size="sm">Angebote ansehen</Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
 
         {/* Tips */}
-        <Card className="bg-accent border-accent">
+        <Card className="bg-accent border-accent mt-8">
           <CardContent className="p-5">
             <div className="flex items-start gap-3">
               <span className="text-2xl">💡</span>

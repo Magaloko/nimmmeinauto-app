@@ -1,24 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from "@/components/ui";
 import { Navbar } from "../../components/navbar";
-
-interface ListingData {
-  make: string;
-  model: string;
-  year: string;
-  fuel: string;
-  transmission: string;
-  mileage: string;
-  condition: string;
-  hasAccident: boolean;
-  firstName: string;
-  lastName: string;
-  plz: string;
-  value: number;
-}
+import { supabase, type Listing, type Offer } from "@/lib/supabase";
 
 const conditionLabels: Record<string, string> = {
   EXCELLENT: "Sehr gut",
@@ -39,74 +26,124 @@ function formatEur(cents: number): string {
   return (cents / 100).toLocaleString("de-AT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 }
 
-const MOCK_LISTING: ListingData = {
-  make: "Volkswagen",
-  model: "Golf",
-  year: "2019",
-  fuel: "benzin",
-  transmission: "manual",
-  mileage: "82000",
-  condition: "GOOD",
-  hasAccident: false,
-  firstName: "Max",
-  lastName: "Mustermann",
-  plz: "1010",
-  value: 1540000,
-};
+const DEALER_BADGES = [
+  { badge: "Schnellste Abwicklung", badgeColor: "bg-green-100 text-green-700" },
+  { badge: "Geprüfter Händler", badgeColor: "bg-blue-100 text-blue-700" },
+  { badge: "Barzahlung", badgeColor: "bg-purple-100 text-purple-700" },
+];
 
-export default function BewertungPage() {
-  const [listing, setListing] = useState<ListingData | null>(null);
+function BewertungContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const [listing, setListing] = useState<Listing | null>(null);
+  const [offers, setOffers] = useState<Offer[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showOffers, setShowOffers] = useState(false);
   const [confettiActive, setConfettiActive] = useState(false);
   const [acceptedOffer, setAcceptedOffer] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("nimm_listing");
-      setListing(raw ? (JSON.parse(raw) as ListingData) : MOCK_LISTING);
-    } catch {
-      setListing(MOCK_LISTING);
+    if (!id) {
+      setLoading(false);
+      return;
     }
 
-    // Trigger confetti
     setConfettiActive(true);
     const t1 = setTimeout(() => setConfettiActive(false), 3500);
 
-    // Show dealer offers after 2s
-    const t2 = setTimeout(() => setShowOffers(true), 2000);
+    async function load() {
+      const { data } = await supabase
+        .from("listings")
+        .select("*")
+        .eq("id", id)
+        .single();
 
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, []);
+      setListing(data);
+      setLoading(false);
 
-  if (!listing) return null;
+      setTimeout(async () => {
+        const { data: realOffers } = await supabase
+          .from("offers")
+          .select("*")
+          .eq("listing_id", id);
 
-  const value = listing.value;
+        if (realOffers && realOffers.length > 0) {
+          setOffers(realOffers);
+        } else {
+          const base = data?.estimated_value_cents ?? 2000000;
+          setOffers([
+            {
+              id: "m1",
+              created_at: new Date().toISOString(),
+              listing_id: id!,
+              dealer_name: "Autohaus Müller Wien",
+              dealer_email: null,
+              amount_cents: Math.round(base * 0.92),
+              message: "Sofortige Abholung möglich",
+              status: "PENDING",
+            },
+            {
+              id: "m2",
+              created_at: new Date().toISOString(),
+              listing_id: id!,
+              dealer_name: "Fahrzeugcenter Graz GmbH",
+              dealer_email: null,
+              amount_cents: Math.round(base * 0.88),
+              message: "Besichtigung in 2 Tagen",
+              status: "PENDING",
+            },
+            {
+              id: "m3",
+              created_at: new Date().toISOString(),
+              listing_id: id!,
+              dealer_name: "AutoGroup Salzburg",
+              dealer_email: null,
+              amount_cents: Math.round(base * 0.85),
+              message: "Barzahlung",
+              status: "PENDING",
+            },
+          ]);
+        }
+        setShowOffers(true);
+      }, 2000);
+    }
+
+    load();
+    return () => { clearTimeout(t1); };
+  }, [id]);
+
+  if (!id) {
+    return (
+      <div className="p-8 text-center">
+        Keine Inserat-ID gefunden.{" "}
+        <a href="/auto-bewerten" className="text-primary underline">Neu bewerten</a>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-4">⏳</div>
+          <p>Lade Bewertung...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!listing) {
+    return (
+      <div className="p-8 text-center">
+        Inserat nicht gefunden.{" "}
+        <a href="/auto-bewerten" className="text-primary underline">Neu bewerten</a>
+      </div>
+    );
+  }
+
+  const value = listing.estimated_value_cents;
   const low = Math.round(value * 0.9);
   const high = Math.round(value * 1.1);
-
-  const dealers = [
-    {
-      name: "Autohaus Müller Wien",
-      pct: 0.92,
-      note: "Sofortige Abholung möglich",
-      badge: "Schnellste Abwicklung",
-      badgeColor: "bg-green-100 text-green-700",
-    },
-    {
-      name: "Fahrzeugcenter Graz GmbH",
-      pct: 0.88,
-      note: "Besichtigung in 2 Tagen",
-      badge: "Geprüfter Händler",
-      badgeColor: "bg-blue-100 text-blue-700",
-    },
-    {
-      name: "AutoGroup Salzburg",
-      pct: 0.85,
-      note: "Barzahlung",
-      badge: "Barzahlung",
-      badgeColor: "bg-purple-100 text-purple-700",
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -175,7 +212,7 @@ export default function BewertungPage() {
               </div>
               <div className="bg-gray-50 rounded-lg p-3 text-center">
                 <div className="text-lg mb-1">📊</div>
-                <div className="text-xs font-medium">{Number(listing.mileage).toLocaleString("de-AT")} km</div>
+                <div className="text-xs font-medium">{listing.mileage.toLocaleString("de-AT")} km</div>
                 <div className="text-xs text-muted-foreground">{conditionLabels[listing.condition] ?? listing.condition}</div>
               </div>
             </div>
@@ -185,8 +222,8 @@ export default function BewertungPage() {
               <Badge className="bg-gray-100 text-gray-700 border-0">
                 {listing.transmission === "auto" ? "Automatik" : "Schaltgetriebe"}
               </Badge>
-              {listing.hasAccident && <Badge className="bg-red-100 text-red-700 border-0">Unfallfahrzeug</Badge>}
-              <Badge className="bg-green-100 text-green-700 border-0">PLZ {listing.plz}</Badge>
+              {listing.has_accident_history && <Badge className="bg-red-100 text-red-700 border-0">Unfallfahrzeug</Badge>}
+              <Badge className="bg-green-100 text-green-700 border-0">PLZ {listing.postal_code}</Badge>
             </div>
           </CardContent>
         </Card>
@@ -217,16 +254,16 @@ export default function BewertungPage() {
               <div>
                 <div className="flex items-center gap-2 mb-5">
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
-                  <h3 className="font-semibold text-lg">3 Händlerangebote eingegangen</h3>
+                  <h3 className="font-semibold text-lg">{offers.length} Händlerangebote eingegangen</h3>
                   <Badge className="bg-green-100 text-green-700 border-0 ml-auto">Neu</Badge>
                 </div>
                 <div className="space-y-4">
-                  {dealers.map((dealer, idx) => {
-                    const offer = Math.round(value * dealer.pct);
-                    const accepted = acceptedOffer === dealer.name;
+                  {offers.map((offer, idx) => {
+                    const accepted = acceptedOffer === offer.id;
+                    const dealerMeta = DEALER_BADGES[idx % DEALER_BADGES.length];
                     return (
                       <div
-                        key={dealer.name}
+                        key={offer.id}
                         className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
                           accepted
                             ? "border-green-400 bg-green-50"
@@ -235,20 +272,22 @@ export default function BewertungPage() {
                       >
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold text-sm">{dealer.name}</span>
-                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${dealer.badgeColor}`}>
-                              {dealer.badge}
+                            <span className="font-semibold text-sm">{offer.dealer_name}</span>
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${dealerMeta.badgeColor}`}>
+                              {dealerMeta.badge}
                             </span>
                           </div>
-                          <p className="text-xs text-muted-foreground">{dealer.note}</p>
+                          {offer.message && <p className="text-xs text-muted-foreground">{offer.message}</p>}
                           <div className="flex items-center gap-2 mt-1">
-                            <div className="text-yellow-400 text-xs">{"★".repeat(5 - idx)}</div>
-                            <span className="text-xs text-muted-foreground">{5 - idx}.0 Bewertung</span>
+                            <div className="text-yellow-400 text-xs">{"★".repeat(Math.max(3, 5 - idx))}</div>
+                            <span className="text-xs text-muted-foreground">{Math.max(3, 5 - idx)}.0 Bewertung</span>
                           </div>
                         </div>
                         <div className="text-right ml-4">
-                          <div className="text-xl font-bold text-green-600">{formatEur(offer)}</div>
-                          <div className="text-xs text-muted-foreground mb-2">{Math.round(dealer.pct * 100)}% des Schätzwerts</div>
+                          <div className="text-xl font-bold text-green-600">{formatEur(offer.amount_cents)}</div>
+                          <div className="text-xs text-muted-foreground mb-2">
+                            {Math.round((offer.amount_cents / value) * 100)}% des Schätzwerts
+                          </div>
                           {accepted ? (
                             <div className="flex items-center gap-1 text-green-600 text-xs font-medium">
                               <span>✓</span> Angenommen
@@ -257,8 +296,8 @@ export default function BewertungPage() {
                             <Button
                               size="sm"
                               onClick={() => {
-                                setAcceptedOffer(dealer.name);
-                                alert(`Glückwunsch! ${dealer.name} kontaktiert Sie in Kürze.`);
+                                setAcceptedOffer(offer.id);
+                                alert(`Glückwunsch! ${offer.dealer_name} kontaktiert Sie in Kürze.`);
                               }}
                             >
                               Angebot annehmen
@@ -293,5 +332,20 @@ export default function BewertungPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function BewertungPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-4">⏳</div>
+          <p>Laden...</p>
+        </div>
+      </div>
+    }>
+      <BewertungContent />
+    </Suspense>
   );
 }
