@@ -9,6 +9,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://nimmmeinauto.at"),
   title: "NimmMeinAuto – Auto verkaufen leicht gemacht",
   description: "Verkaufe dein Auto sicher und zum besten Preis. Kostenlose Bewertung in 2 Minuten. Echte Händlerangebote aus ganz Österreich.",
   openGraph: {

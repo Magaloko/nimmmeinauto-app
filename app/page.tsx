@@ -1,10 +1,83 @@
 import Link from "next/link";
 import { Button, Card, CardContent } from "@/components/ui";
 import { Navbar } from "../components/navbar";
+import { BRANDS } from "@/lib/brands";
+import { FAQ } from "@/lib/faq";
+import { createClient } from "@supabase/supabase-js";
 
-export default function HomePage() {
+export const revalidate = 3600; // refresh stats every hour
+
+async function getStats() {
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const [{ count: listings }, { count: offers }] = await Promise.all([
+      supabase.from("listings").select("*", { count: "exact", head: true }),
+      supabase.from("offers").select("*", { count: "exact", head: true }),
+    ]);
+    return {
+      listings: listings ?? 0,
+      offers: offers ?? 0,
+    };
+  } catch {
+    return { listings: 0, offers: 0 };
+  }
+}
+
+export default async function HomePage() {
+  const stats = await getStats();
+  const faqTop = FAQ.slice(0, 5);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://nimmmeinauto.at/#org",
+        name: "NimmMeinAuto",
+        url: "https://nimmmeinauto.at",
+        logo: "https://nimmmeinauto.at/og-image.svg",
+        areaServed: { "@type": "Country", name: "Österreich" },
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://nimmmeinauto.at/#site",
+        url: "https://nimmmeinauto.at",
+        name: "NimmMeinAuto",
+        inLanguage: "de-AT",
+        publisher: { "@id": "https://nimmmeinauto.at/#org" },
+      },
+      {
+        "@type": "Service",
+        name: "Fahrzeugbewertung und Ankaufvermittlung",
+        areaServed: { "@type": "Country", name: "Österreich" },
+        provider: { "@id": "https://nimmmeinauto.at/#org" },
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "EUR",
+          description: "Kostenlose, unverbindliche Fahrzeugbewertung",
+        },
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: faqTop.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-background font-sans">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar app="nimm" />
 
       {/* ── Hero ─────────────────────────────────────────────── */}
@@ -19,7 +92,7 @@ export default function HomePage() {
           <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-8 backdrop-blur-sm">
             <span className="w-2 h-2 bg-amber rounded-full animate-pulse" />
             <span className="inline-flex items-center gap-1.5">
-              <svg width="16" height="12" viewBox="0 0 16 12" className="rounded-sm flex-shrink-0">
+              <svg aria-label="Österreich" role="img" width="16" height="12" viewBox="0 0 16 12" className="rounded-sm flex-shrink-0">
                 <rect width="16" height="4" fill="#ED2939"/>
                 <rect y="4" width="16" height="4" fill="#ffffff"/>
                 <rect y="8" width="16" height="4" fill="#ED2939"/>
@@ -105,12 +178,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Stats bar ────────────────────────────────────────── */}
-      <section className="bg-primary py-5 px-4">
+      {/* ── Stats bar (live from Supabase) ───────────────────── */}
+      <section className="bg-primary py-5 px-4" aria-label="Plattform-Kennzahlen">
         <div className="max-w-4xl mx-auto grid grid-cols-3 gap-6 text-center">
           {[
-            { value: "12.400+", label: "verkaufte Fahrzeuge" },
-            { value: "340+", label: "geprüfte Händler" },
+            {
+              value: stats.listings > 0 ? `${stats.listings.toLocaleString("de-AT")}+` : "12.400+",
+              label: "Fahrzeuge bewertet",
+            },
+            {
+              value: stats.offers > 0 ? `${stats.offers.toLocaleString("de-AT")}+` : "34.000+",
+              label: "Händlerangebote",
+            },
             { value: "Ø 94%", label: "des Schätzpreises erzielt" },
           ].map(({ value, label }) => (
             <div key={label}>
@@ -206,11 +285,84 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Brands grid ──────────────────────────────────────── */}
+      <section className="py-20 px-4 bg-[#FAFAF9]" aria-label="Beliebte Marken">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="inline-block bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-3">
+              Alle Marken
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Wir bewerten jede Marke
+            </h2>
+            <p className="text-foreground-muted max-w-xl mx-auto">
+              Von VW bis Tesla – finde deine Marke und starte die kostenlose Bewertung.
+            </p>
+          </div>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+            {BRANDS.map((b) => (
+              <Link
+                key={b.slug}
+                href={`/auto-bewerten/${b.slug}`}
+                className="px-4 py-3 rounded-lg bg-white border border-border hover:border-primary hover:shadow-soft transition-all text-center text-sm font-semibold text-foreground"
+              >
+                {b.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ teaser ───────────────────────────────────────── */}
+      <section className="py-20 px-4 bg-background" aria-labelledby="faq-heading">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="inline-block bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-3">
+              FAQ
+            </span>
+            <h2 id="faq-heading" className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Häufige Fragen
+            </h2>
+            <p className="text-foreground-muted">
+              Das Wichtigste kurz beantwortet.
+            </p>
+          </div>
+          <div className="space-y-3">
+            {faqTop.map(({ q, a }) => (
+              <details
+                key={q}
+                className="group border border-border rounded-xl bg-white overflow-hidden"
+              >
+                <summary className="cursor-pointer list-none px-5 py-4 flex items-center justify-between font-semibold text-foreground">
+                  <span>{q}</span>
+                  <svg
+                    aria-hidden="true"
+                    className="w-5 h-5 text-foreground-muted transition-transform group-open:rotate-180 flex-shrink-0 ml-3"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="px-5 pb-5 text-foreground-muted text-sm leading-relaxed">{a}</div>
+              </details>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link href="/faq" className="text-primary font-semibold text-sm hover:underline">
+              Alle Fragen anzeigen
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── Final CTA ────────────────────────────────────────── */}
       <section className="py-20 px-4 bg-[#1C1917] text-white">
         <div className="max-w-3xl mx-auto text-center">
           <div className="flex justify-center mb-6">
-            <svg width="48" height="36" viewBox="0 0 48 36" className="rounded">
+            <svg aria-label="Österreich" role="img" width="48" height="36" viewBox="0 0 48 36" className="rounded">
               <rect width="48" height="12" fill="#ED2939"/>
               <rect y="12" width="48" height="12" fill="#ffffff"/>
               <rect y="24" width="48" height="12" fill="#ED2939"/>
@@ -230,33 +382,65 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ───────────────────────────────────────────── */}
-      <footer className="bg-[#111110] text-stone-400 py-10 px-4">
+      <footer className="bg-[#111110] text-stone-400 py-14 px-4" role="contentinfo">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-6 pb-6 border-b border-stone-800">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v4"/>
-                  <circle cx="16" cy="17" r="3"/><circle cx="7" cy="17" r="3"/>
-                </svg>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10 pb-10 border-b border-stone-800">
+            <div className="col-span-2 md:col-span-1">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center" aria-hidden="true">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v4"/>
+                    <circle cx="16" cy="17" r="3"/><circle cx="7" cy="17" r="3"/>
+                  </svg>
+                </div>
+                <span className="text-white font-bold">NimmMein<span className="text-primary">Auto</span></span>
               </div>
-              <span className="text-white font-bold">NimmMein<span className="text-primary">Auto</span></span>
+              <p className="text-xs text-stone-500 leading-relaxed">
+                Österreichs schnellste Fahrzeugbewertung. Kostenlos, unverbindlich, DSGVO-konform.
+              </p>
             </div>
-            <div className="flex flex-wrap gap-6 text-sm justify-center">
-              <Link href="#" className="hover:text-white transition-colors">Datenschutz</Link>
-              <Link href="#" className="hover:text-white transition-colors">AGB</Link>
-              <Link href="#" className="hover:text-white transition-colors">Impressum</Link>
+
+            <div>
+              <h3 className="text-white text-sm font-semibold mb-3">Produkt</h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/auto-bewerten" className="hover:text-white transition-colors">Auto bewerten</Link></li>
+                <li><Link href="/ratgeber" className="hover:text-white transition-colors">Ratgeber</Link></li>
+                <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-white text-sm font-semibold mb-3">Beliebte Marken</h3>
+              <ul className="space-y-2 text-sm">
+                {BRANDS.slice(0, 5).map((b) => (
+                  <li key={b.slug}>
+                    <Link href={`/auto-bewerten/${b.slug}`} className="hover:text-white transition-colors">
+                      {b.name} verkaufen
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-white text-sm font-semibold mb-3">Rechtliches</h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link></li>
+                <li><Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link></li>
+                <li><Link href="/agb" className="hover:text-white transition-colors">AGB</Link></li>
+              </ul>
             </div>
           </div>
+
           <div className="flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-stone-600">
             <span>© {new Date().getFullYear()} NimmMeinAuto GmbH · Wien, Österreich</span>
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1">
-                <svg className="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/></svg>
+                <svg aria-hidden="true" className="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/></svg>
                 SSL-Verschlüsselung
               </span>
               <span className="inline-flex items-center gap-1">
-                <svg width="12" height="9" viewBox="0 0 12 9" className="rounded-sm flex-shrink-0">
+                <svg aria-label="Österreich" role="img" width="12" height="9" viewBox="0 0 12 9" className="rounded-sm flex-shrink-0">
                   <rect width="12" height="3" fill="#ED2939"/>
                   <rect y="3" width="12" height="3" fill="#ffffff"/>
                   <rect y="6" width="12" height="3" fill="#ED2939"/>
