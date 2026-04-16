@@ -46,7 +46,7 @@ export default function HomePage() {
                   </Button>
                 </Link>
                 <Link href="#how">
-                  <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 hover:text-white text-base h-12 w-full sm:w-auto">
+                  <Button size="lg" className="bg-white/15 hover:bg-white/25 text-white border border-white/40 text-base h-12 w-full sm:w-auto backdrop-blur-sm">
                     Wie es funktioniert
                   </Button>
                 </Link>
@@ -70,7 +70,7 @@ export default function HomePage() {
 
             {/* Right: animated value card */}
             <div className="hidden md:block">
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+              <div className="bg-[#292524]/80 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-2xl ring-1 ring-amber/10">
                 <div className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">Beispiel-Bewertung</div>
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
@@ -81,7 +81,7 @@ export default function HomePage() {
                     <div className="text-stone-400 text-sm">45.000 km · Gut</div>
                   </div>
                 </div>
-                <div className="bg-white/5 rounded-xl p-4 mb-4">
+                <div className="bg-black/20 rounded-xl p-4 mb-4 border border-white/5">
                   <div className="text-stone-400 text-xs mb-1">Geschätzter Marktwert</div>
                   <div className="text-3xl font-bold text-amber">€ 17.200</div>
                   <div className="text-stone-400 text-xs mt-1">Spanne: € 15.500 – € 18.900</div>
@@ -92,7 +92,7 @@ export default function HomePage() {
                     { dealer: "Fahrzeugcenter Graz", amount: "€ 16.100", pct: "94%", color: "bg-blue-500" },
                     { dealer: "AutoGroup Salzburg", amount: "€ 15.500", pct: "90%", color: "bg-purple-500" },
                   ].map((o) => (
-                    <div key={o.dealer} className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
+                    <div key={o.dealer} className="flex items-center justify-between bg-black/15 rounded-lg px-3 py-2 border border-white/5">
                       <div className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${o.color}`} />
                         <span className="text-xs text-stone-300">{o.dealer}</span>
@@ -300,7 +300,6 @@ export default function HomePage() {
               <Link href="#" className="hover:text-white transition-colors">Datenschutz</Link>
               <Link href="#" className="hover:text-white transition-colors">AGB</Link>
               <Link href="#" className="hover:text-white transition-colors">Impressum</Link>
-              <Link href="/dealer" className="hover:text-white transition-colors">Für Händler</Link>
             </div>
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-stone-600">
