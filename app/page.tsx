@@ -18,7 +18,14 @@ export default function HomePage() {
           {/* Trust badge */}
           <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-8 backdrop-blur-sm">
             <span className="w-2 h-2 bg-amber rounded-full animate-pulse" />
-            <span>🇦🇹 Österreichs schnellste Fahrzeugbewertung</span>
+            <span className="inline-flex items-center gap-1.5">
+              <svg width="16" height="12" viewBox="0 0 16 12" className="rounded-sm flex-shrink-0">
+                <rect width="16" height="4" fill="#ED2939"/>
+                <rect y="4" width="16" height="4" fill="#ffffff"/>
+                <rect y="8" width="16" height="4" fill="#ED2939"/>
+              </svg>
+              Österreichs schnellste Fahrzeugbewertung
+            </span>
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -35,7 +42,7 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row gap-3 mb-8">
                 <Link href="/auto-bewerten">
                   <Button size="lg" className="bg-amber hover:bg-amber-dark text-foreground font-bold shadow-warm text-base px-8 h-12 w-full sm:w-auto">
-                    Jetzt kostenlos bewerten →
+                    Jetzt kostenlos bewerten
                   </Button>
                 </Link>
                 <Link href="#how">
@@ -66,7 +73,9 @@ export default function HomePage() {
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
                 <div className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">Beispiel-Bewertung</div>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center text-xl">🚗</div>
+                  <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
+                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 17H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1l3-4h8l3 4h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-5"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
+                  </div>
                   <div>
                     <div className="font-semibold text-white">VW Golf 2020</div>
                     <div className="text-stone-400 text-sm">45.000 km · Gut</div>
@@ -200,7 +209,7 @@ export default function HomePage() {
           <div className="text-center mt-14">
             <Link href="/auto-bewerten">
               <Button size="lg" className="bg-primary hover:bg-primary-dark text-white font-semibold px-10 h-12 shadow-blue">
-                Jetzt kostenlos starten →
+                Jetzt kostenlos starten
               </Button>
             </Link>
           </div>
@@ -211,7 +220,11 @@ export default function HomePage() {
       <section className="py-20 px-4 bg-background">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <div className="flex justify-center gap-0.5 mb-3 text-amber text-xl">{"★★★★★"}</div>
+            <div className="flex justify-center gap-0.5 mb-3">
+              {[1,2,3,4,5].map((i) => (
+                <svg key={i} className="w-5 h-5 text-amber" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+              ))}
+            </div>
             <h2 className="text-3xl font-bold text-foreground mb-2">Was unsere Kunden sagen</h2>
             <p className="text-foreground-muted text-sm">Über 12.000 erfolgreiche Verkäufe in Österreich</p>
           </div>
@@ -223,7 +236,11 @@ export default function HomePage() {
             ].map(({ name, city, car, text, stars }) => (
               <Card key={name} className="border hover:shadow-card transition-shadow">
                 <CardContent className="p-6">
-                  <div className="flex gap-0.5 mb-3 text-amber text-sm">{"★".repeat(stars)}</div>
+                  <div className="flex gap-0.5 mb-3">
+                    {Array.from({length: stars}).map((_, i) => (
+                      <svg key={i} className="w-4 h-4 text-amber" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    ))}
+                  </div>
                   <p className="text-foreground text-sm leading-relaxed mb-4">&#8220;{text}&#8221;</p>
                   <div className="pt-4 border-t border-border">
                     <div className="flex items-center gap-3">
@@ -246,14 +263,20 @@ export default function HomePage() {
       {/* ── Final CTA ────────────────────────────────────────── */}
       <section className="py-20 px-4 bg-[#1C1917] text-white">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="text-4xl mb-6">🇦🇹</div>
+          <div className="flex justify-center mb-6">
+            <svg width="48" height="36" viewBox="0 0 48 36" className="rounded">
+              <rect width="48" height="12" fill="#ED2939"/>
+              <rect y="12" width="48" height="12" fill="#ffffff"/>
+              <rect y="24" width="48" height="12" fill="#ED2939"/>
+            </svg>
+          </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Bereit, dein Auto zu verkaufen?</h2>
           <p className="text-stone-300 mb-8 text-lg">
             Starte jetzt – kostenlos, unverbindlich, in unter 2 Minuten.
           </p>
           <Link href="/auto-bewerten">
             <Button size="lg" className="bg-amber hover:bg-amber-dark text-foreground font-bold text-base px-12 h-12 shadow-warm">
-              Jetzt bewerten →
+              Jetzt bewerten
             </Button>
           </Link>
           <p className="text-stone-500 text-xs mt-6">Keine Registrierung nötig · DSGVO-konform · Made in Austria</p>
@@ -287,7 +310,14 @@ export default function HomePage() {
                 <svg className="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/></svg>
                 SSL-Verschlüsselung
               </span>
-              <span>🇦🇹 Österreich</span>
+              <span className="inline-flex items-center gap-1">
+                <svg width="12" height="9" viewBox="0 0 12 9" className="rounded-sm flex-shrink-0">
+                  <rect width="12" height="3" fill="#ED2939"/>
+                  <rect y="3" width="12" height="3" fill="#ffffff"/>
+                  <rect y="6" width="12" height="3" fill="#ED2939"/>
+                </svg>
+                Österreich
+              </span>
             </div>
           </div>
         </div>

@@ -85,18 +85,45 @@ const YEARS = Array.from({ length: CURRENT_YEAR - 2009 }, (_, i) => String(CURRE
 const MAKES = Object.keys(MODELS);
 
 const conditionOptions = [
-  { key: "EXCELLENT", label: "Sehr gut", desc: "Kein Schaden, wie neu", emoji: "⭐" },
-  { key: "GOOD", label: "Gut", desc: "Normale Gebrauchsspuren", emoji: "👍" },
-  { key: "FAIR", label: "Gebraucht", desc: "Sichtbare Mängel", emoji: "🔧" },
-  { key: "DAMAGED", label: "Beschädigt", desc: "Erhebliche Schäden", emoji: "⚠️" },
+  {
+    key: "EXCELLENT", label: "Sehr gut", desc: "Kein Schaden, wie neu",
+    icon: <svg className="w-6 h-6 text-amber" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>,
+  },
+  {
+    key: "GOOD", label: "Gut", desc: "Normale Gebrauchsspuren",
+    icon: <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>,
+  },
+  {
+    key: "FAIR", label: "Gebraucht", desc: "Sichtbare Mängel",
+    icon: <svg className="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>,
+  },
+  {
+    key: "DAMAGED", label: "Beschädigt", desc: "Erhebliche Schäden",
+    icon: <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>,
+  },
 ];
 
 const fuelOptions = [
-  { key: "benzin", label: "Benzin", icon: "⛽" },
-  { key: "diesel", label: "Diesel", icon: "🛢️" },
-  { key: "elektro", label: "Elektro", icon: "⚡" },
-  { key: "hybrid", label: "Hybrid", icon: "🔋" },
-  { key: "lpg", label: "LPG", icon: "🔵" },
+  {
+    key: "benzin", label: "Benzin",
+    icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h2l2-7h10l2 7h2v10H3V10zm4 0h10M7 14h.01M17 14h.01"/></svg>,
+  },
+  {
+    key: "diesel", label: "Diesel",
+    icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>,
+  },
+  {
+    key: "elektro", label: "Elektro",
+    icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>,
+  },
+  {
+    key: "hybrid", label: "Hybrid",
+    icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>,
+  },
+  {
+    key: "lpg", label: "LPG",
+    icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>,
+  },
 ];
 
 export default function AutoBewertenPage() {
@@ -210,7 +237,10 @@ export default function AutoBewertenPage() {
 
       {/* Hero bar */}
       <div className="bg-[#1C1917] text-white py-3 px-4 text-center text-sm font-medium">
-        🚗 Bewertung in 2 Minuten · Kostenlos & unverbindlich
+        <span className="inline-flex items-center gap-2">
+          <svg className="w-4 h-4 text-amber" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 17H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1l3-4h8l3 4h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-5"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
+          Bewertung in 2 Minuten · Kostenlos &amp; unverbindlich
+        </span>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-10">
@@ -318,7 +348,7 @@ export default function AutoBewertenPage() {
                             : "border-border hover:border-primary/50 text-foreground-muted"
                         }`}
                       >
-                        <span className="text-xl">{icon}</span>
+                        <span className={form.fuel === key ? "text-primary" : "text-foreground-muted"}>{icon}</span>
                         {label}
                       </button>
                     ))}
@@ -330,8 +360,14 @@ export default function AutoBewertenPage() {
                   <Label>Getriebe *</Label>
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { key: "manual", label: "Schaltgetriebe", icon: "⚙️" },
-                      { key: "auto", label: "Automatik", icon: "🔄" },
+                      {
+                        key: "manual", label: "Schaltgetriebe",
+                        icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="7" cy="7" r="2"/><circle cx="17" cy="7" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path strokeLinecap="round" d="M7 9v3m5-3v3m5-3v3M7 15v-1m10-1v2"/></svg>,
+                      },
+                      {
+                        key: "auto", label: "Automatik",
+                        icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>,
+                      },
                     ].map(({ key, label, icon }) => (
                       <button
                         key={key}
@@ -343,7 +379,7 @@ export default function AutoBewertenPage() {
                             : "border-border hover:border-primary/50 text-foreground-muted"
                         }`}
                       >
-                        <span className="text-2xl">{icon}</span>
+                        <span className={form.transmission === key ? "text-primary" : "text-foreground-muted"}>{icon}</span>
                         {label}
                       </button>
                     ))}
@@ -377,7 +413,7 @@ export default function AutoBewertenPage() {
                 <div className="space-y-2">
                   <Label>Fahrzeugzustand *</Label>
                   <div className="grid grid-cols-2 gap-3">
-                    {conditionOptions.map(({ key, label, desc, emoji }) => (
+                    {conditionOptions.map(({ key, label, desc, icon }) => (
                       <button
                         key={key}
                         type="button"
@@ -388,7 +424,7 @@ export default function AutoBewertenPage() {
                             : "border-border hover:border-primary/50"
                         }`}
                       >
-                        <span className="text-2xl">{emoji}</span>
+                        <span>{icon}</span>
                         <span className="font-semibold text-sm text-foreground">{label}</span>
                         <span className="text-xs text-foreground-muted">{desc}</span>
                       </button>
@@ -437,7 +473,7 @@ export default function AutoBewertenPage() {
                       key={label}
                       className="aspect-square border-2 border-dashed border-stone-300 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group"
                     >
-                      <span className="text-2xl group-hover:scale-110 transition-transform">📷</span>
+                      <svg className="w-6 h-6 text-foreground-muted group-hover:text-primary group-hover:scale-110 transition-all" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                       <span className="text-xs text-foreground-muted text-center px-2">Foto hinzufügen</span>
                       <span className="text-xs text-foreground-muted/60 text-center px-2">{label}</span>
                     </div>
@@ -445,7 +481,7 @@ export default function AutoBewertenPage() {
                 </div>
 
                 <div className="flex items-start gap-3 p-4 rounded-xl bg-primary/5 border border-primary/20">
-                  <span className="text-primary text-lg mt-0.5">ℹ️</span>
+                  <svg className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                   <p className="text-sm text-primary/80">
                     <strong>Demo-Hinweis:</strong> Fotos werden in der finalen Version direkt gespeichert. Du kannst jetzt ohne Fotos fortfahren.
                   </p>
@@ -552,7 +588,7 @@ export default function AutoBewertenPage() {
 
               {step < 3 && (
                 <Button onClick={handleNext} className="bg-primary hover:bg-primary-dark text-white font-semibold">
-                  Weiter →
+                  Weiter
                 </Button>
               )}
 
@@ -562,7 +598,7 @@ export default function AutoBewertenPage() {
                     Weiter ohne Fotos
                   </Button>
                   <Button onClick={() => setStep(4)} className="bg-primary hover:bg-primary-dark text-white font-semibold">
-                    Weiter →
+                    Weiter
                   </Button>
                 </div>
               )}
@@ -575,7 +611,7 @@ export default function AutoBewertenPage() {
                     size="lg"
                     className="bg-amber hover:bg-amber-dark text-foreground font-bold"
                   >
-                    {isSubmitting ? "Wird gespeichert..." : "Bewertung berechnen →"}
+                    {isSubmitting ? "Wird gespeichert..." : "Bewertung berechnen"}
                   </Button>
                   {submitError && <p className="text-destructive text-sm">{submitError}</p>}
                 </div>
@@ -584,8 +620,9 @@ export default function AutoBewertenPage() {
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs text-foreground-muted mt-6">
-          🔒 SSL-verschlüsselt · DSGVO-konform · Daten werden nicht ohne Zustimmung weitergegeben
+        <p className="text-center text-xs text-foreground-muted mt-6 inline-flex items-center gap-1.5 justify-center w-full">
+          <svg className="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/></svg>
+          SSL-verschlüsselt · DSGVO-konform · Daten werden nicht ohne Zustimmung weitergegeben
         </p>
       </div>
     </div>
