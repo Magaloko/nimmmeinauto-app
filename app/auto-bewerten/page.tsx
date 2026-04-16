@@ -6,21 +6,158 @@ import { Navbar } from "../../components/navbar";
 import { submitListing } from "../actions";
 
 // ─── Valuation engine ───────────────────────────────────────────────────────
+// Model names match the API output (NHTSA English names for major brands,
+// local names for European brands served from LOCAL_MODELS in /api/cars/models)
 const BASE_PRICES: Record<string, Record<string, number>> = {
-  "BMW": { "3er": 2800000, "5er": 4500000, "1er": 2200000, "X3": 3800000, "X5": 5500000 },
-  "Mercedes-Benz": { "A-Klasse": 2500000, "C-Klasse": 3200000, "E-Klasse": 4800000, "GLC": 4200000, "Sprinter": 3500000 },
-  "Audi": { "A3": 2400000, "A4": 3200000, "A6": 4500000, "Q3": 3000000, "Q5": 4000000 },
-  "Volkswagen": { "Golf": 2200000, "Passat": 2800000, "Tiguan": 3200000, "Polo": 1800000, "T-Roc": 2600000 },
-  "Skoda": { "Octavia": 2000000, "Fabia": 1600000, "Superb": 2800000, "Karoq": 2400000, "Kodiaq": 3000000 },
-  "Seat": { "Leon": 1900000, "Ibiza": 1700000, "Ateca": 2500000, "Tarraco": 2900000 },
-  "Ford": { "Focus": 1800000, "Fiesta": 1500000, "Kuga": 2600000, "Mondeo": 2200000 },
-  "Opel": { "Astra": 1700000, "Corsa": 1500000, "Insignia": 2400000, "Mokka": 2200000 },
-  "Toyota": { "Corolla": 2100000, "Yaris": 1600000, "RAV4": 3200000, "C-HR": 2600000 },
-  "Hyundai": { "i30": 1900000, "i20": 1600000, "Tucson": 2800000, "Kona": 2400000 },
-  "Kia": { "Sportage": 2600000, "Ceed": 1900000, "Sorento": 3400000, "Stonic": 2200000 },
-  "Renault": { "Clio": 1600000, "Megane": 1900000, "Kadjar": 2300000, "Zoe": 2100000 },
-  "Peugeot": { "208": 1700000, "308": 2100000, "3008": 2800000, "5008": 3200000 },
-  "Fiat": { "500": 1400000, "Punto": 1300000, "Tipo": 1600000, "Panda": 1200000 },
+  // BMW – NHTSA returns "3 Series", "5 Series", etc.
+  "BMW": {
+    "1 Series": 2200000, "2 Series": 2500000, "3 Series": 2800000,
+    "4 Series": 3200000, "5 Series": 4500000, "7 Series": 6500000,
+    "X1": 2800000, "X2": 2600000, "X3": 3800000, "X4": 4000000,
+    "X5": 5500000, "X6": 5800000, "i3": 2400000, "i4": 4500000,
+  },
+  // Mercedes-Benz – NHTSA returns "C-Class", "E-Class", etc.
+  "Mercedes-Benz": {
+    "A-Class": 2500000, "B-Class": 2300000, "C-Class": 3200000,
+    "E-Class": 4800000, "S-Class": 8000000, "GLA": 3000000,
+    "GLB": 3400000, "GLC": 4200000, "GLE": 5500000, "GLS": 7000000,
+    "Sprinter": 3500000, "Vito": 3000000, "CLA": 3000000, "CLS": 5000000,
+  },
+  // Audi – NHTSA returns "A3", "A4", etc. (already matching)
+  "Audi": {
+    "A1": 1800000, "A3": 2400000, "A4": 3200000, "A5": 3800000,
+    "A6": 4500000, "A7": 5500000, "A8": 7000000,
+    "Q2": 2400000, "Q3": 3000000, "Q5": 4000000, "Q7": 5500000, "Q8": 6500000,
+    "TT": 3800000, "e-tron": 4800000,
+  },
+  // Volkswagen – model names match NHTSA
+  "Volkswagen": {
+    "Polo": 1800000, "Golf": 2200000, "Golf Plus": 2000000,
+    "Passat": 2800000, "Tiguan": 3200000, "Touareg": 5000000,
+    "T-Roc": 2600000, "T-Cross": 2200000, "ID.3": 3200000, "ID.4": 4000000,
+    "Caddy": 2400000, "Transporter": 3000000, "Sharan": 2800000, "Touran": 2500000,
+  },
+  // European brands – names match LOCAL_MODELS in /api/cars/models
+  "Skoda": {
+    "Fabia": 1600000, "Octavia": 2000000, "Superb": 2800000,
+    "Kamiq": 2000000, "Karoq": 2400000, "Kodiaq": 3000000,
+    "Scala": 1900000, "Enyaq": 3800000, "Rapid": 1500000,
+  },
+  "Seat": {
+    "Mii": 1200000, "Ibiza": 1700000, "Leon": 1900000,
+    "Arona": 2100000, "Ateca": 2500000, "Tarraco": 2900000,
+  },
+  "Cupra": { "Born": 3500000, "Formentor": 3200000, "Leon": 2800000, "Ateca": 3000000 },
+  "Opel": {
+    "Corsa": 1500000, "Astra": 1700000, "Insignia": 2400000,
+    "Crossland": 1900000, "Grandland": 2600000, "Mokka": 2200000, "Zafira": 2000000,
+  },
+  "Renault": {
+    "Twingo": 1200000, "Clio": 1600000, "Megane": 1900000,
+    "Captur": 2100000, "Kadjar": 2300000, "Scenic": 2200000,
+    "Laguna": 1800000, "Koleos": 2600000, "Zoe": 2100000, "Kangoo": 2200000,
+  },
+  "Peugeot": {
+    "107": 900000, "108": 1000000, "206": 900000, "207": 1100000,
+    "208": 1700000, "308": 2100000, "2008": 2200000,
+    "3008": 2800000, "5008": 3200000, "508": 3500000,
+  },
+  "Citroën": {
+    "C1": 1000000, "C2": 1000000, "C3": 1400000, "C4": 2000000,
+    "C5": 2400000, "Berlingo": 2000000, "Picasso": 1800000,
+    "DS3": 1800000, "DS5": 2800000,
+  },
+  "Dacia": {
+    "Logan": 1000000, "Sandero": 1200000, "Duster": 1700000,
+    "Jogger": 1800000, "Spring": 1400000,
+  },
+  // Common makes with NHTSA-aligned names
+  "Ford": {
+    "Ka": 900000, "Fiesta": 1500000, "Focus": 1800000,
+    "Mondeo": 2200000, "Kuga": 2600000, "Edge": 3200000,
+    "Puma": 2200000, "Explorer": 4000000, "Mustang": 5000000,
+  },
+  "Toyota": {
+    "Aygo": 1100000, "Yaris": 1600000, "Corolla": 2100000,
+    "Auris": 1800000, "Avensis": 2200000, "C-HR": 2600000,
+    "RAV4": 3200000, "Land Cruiser": 5500000, "Prius": 2200000, "Camry": 3000000,
+  },
+  "Hyundai": {
+    "i10": 1200000, "i20": 1600000, "i30": 1900000,
+    "Tucson": 2800000, "Santa Fe": 3800000, "Kona": 2400000, "Ioniq": 2800000,
+  },
+  "Kia": {
+    "Picanto": 1200000, "Rio": 1500000, "Ceed": 1900000,
+    "Stonic": 2200000, "Sportage": 2600000, "Sorento": 3400000, "Niro": 2600000,
+  },
+  "Mazda": {
+    "Mazda2": 1600000, "Mazda3": 2200000, "Mazda6": 2800000,
+    "CX-3": 2200000, "CX-5": 3000000, "CX-30": 2800000, "MX-5": 3200000,
+  },
+  "Honda": {
+    "Jazz": 1700000, "Civic": 2200000, "Accord": 2800000,
+    "CR-V": 3200000, "HR-V": 2400000, "e": 2800000,
+  },
+  "Fiat": {
+    "500": 1400000, "Panda": 1200000, "Tipo": 1600000,
+    "500X": 2000000, "500L": 1800000,
+  },
+  "Volvo": {
+    "V40": 2800000, "V60": 3800000, "V90": 5000000,
+    "S60": 3500000, "S90": 5500000, "XC40": 3800000, "XC60": 4800000, "XC90": 6000000,
+  },
+  "Porsche": {
+    "911": 10000000, "Cayenne": 8000000, "Macan": 5500000,
+    "Panamera": 9000000, "Taycan": 9500000, "Boxster": 6000000,
+  },
+  "Tesla": {
+    "Model 3": 4500000, "Model S": 7000000,
+    "Model X": 8000000, "Model Y": 5000000,
+  },
+  "MINI": {
+    "Mini": 2200000, "Countryman": 2800000, "Clubman": 2500000, "Paceman": 2400000,
+  },
+  "Nissan": {
+    "Micra": 1400000, "Note": 1500000, "Juke": 2200000,
+    "Qashqai": 2800000, "X-Trail": 3200000, "Leaf": 2500000, "GT-R": 8000000,
+  },
+  "Suzuki": {
+    "Swift": 1500000, "Ignis": 1400000, "Vitara": 2200000,
+    "SX4": 1900000, "Jimny": 2200000,
+  },
+  "Mitsubishi": {
+    "Colt": 1300000, "ASX": 2000000, "Outlander": 2800000,
+    "Eclipse Cross": 2800000, "Space Star": 1300000,
+  },
+  "Subaru": {
+    "Impreza": 2200000, "Legacy": 2500000, "Outback": 3000000,
+    "Forester": 2800000, "XV": 2400000, "WRX": 3800000,
+  },
+  "Jeep": {
+    "Renegade": 2500000, "Compass": 2800000,
+    "Cherokee": 3500000, "Grand Cherokee": 4800000, "Wrangler": 4500000,
+  },
+  "Land Rover": {
+    "Defender": 6500000, "Discovery": 5500000, "Discovery Sport": 4200000,
+    "Range Rover": 9000000, "Range Rover Sport": 7000000, "Range Rover Evoque": 4500000, "Freelander": 3000000,
+  },
+  // Alfa Romeo – names match LOCAL_MODELS
+  "Alfa Romeo": {
+    "MiTo": 1500000, "Giulietta": 1900000, "Giulia": 3200000,
+    "Stelvio": 4000000, "147": 1200000, "156": 1300000, "159": 1600000,
+    "Brera": 2200000, "Spider": 2800000,
+  },
+  "Smart": {
+    "Fortwo": 1200000, "Forfour": 1400000, "#1": 2800000,
+  },
+  "Lexus": {
+    "IS": 3500000, "ES": 4000000, "LS": 6500000,
+    "NX": 4000000, "RX": 5000000, "UX": 3200000,
+  },
+  "Jaguar": {
+    "XE": 3200000, "XF": 4200000, "XJ": 6000000,
+    "E-Pace": 3800000, "F-Pace": 5000000, "I-Pace": 4500000, "F-Type": 6000000,
+  },
 };
 
 const CONDITION_FACTOR: Record<string, number> = {
@@ -30,12 +167,28 @@ const CONDITION_FACTOR: Record<string, number> = {
   DAMAGED: 0.40,
 };
 
+// Make-level average base price fallback (cents)
+const MAKE_DEFAULTS: Record<string, number> = {
+  "Porsche": 8000000, "Land Rover": 5000000, "Jaguar": 4500000, "Lexus": 4000000,
+  "Tesla": 5000000, "Volvo": 4000000, "BMW": 3500000, "Mercedes-Benz": 4000000,
+  "Audi": 3200000, "Volkswagen": 2500000, "Toyota": 2500000, "Hyundai": 2200000,
+  "Kia": 2200000, "Mazda": 2200000, "Honda": 2200000, "Skoda": 2000000,
+  "Seat": 1900000, "Cupra": 2800000, "Alfa Romeo": 2200000, "Fiat": 1500000,
+  "Opel": 1800000, "Ford": 1800000, "Renault": 1800000, "Peugeot": 1900000,
+  "Citroën": 1700000, "Dacia": 1400000, "Suzuki": 1700000, "Nissan": 2000000,
+  "Mitsubishi": 2000000, "Subaru": 2200000, "Jeep": 3200000, "MINI": 2400000,
+};
+
 function calcValue(make: string, model: string, year: number, mileage: number, condition: string): number {
-  const base = BASE_PRICES[make]?.[model] ?? 2000000;
-  const age = new Date().getFullYear() - year;
+  // Use specific model price, then make default, then global default
+  const base = BASE_PRICES[make]?.[model] ?? MAKE_DEFAULTS[make] ?? 2000000;
+  const age = Math.max(0, new Date().getFullYear() - year);
   const avgKm = age * 15000;
-  const kmFactor = Math.max(0.3, 1 - Math.max(0, ((mileage - avgKm) / 10000) * 0.01));
-  const ageFactor = Math.max(0.3, 1 - age * 0.06);
+  const excessKm = Math.max(0, mileage - avgKm);
+  // Low km is also a positive signal
+  const savedKm = Math.max(0, avgKm - mileage);
+  const kmFactor = Math.max(0.3, 1 - (excessKm / 10000) * 0.01 + (savedKm / 10000) * 0.005);
+  const ageFactor = Math.max(0.2, 1 - age * 0.055);
   const cf = CONDITION_FACTOR[condition] ?? 0.85;
   return Math.round(base * kmFactor * ageFactor * cf);
 }
@@ -64,7 +217,7 @@ interface FormData {
 }
 
 const CURRENT_YEAR = new Date().getFullYear();
-const YEARS = Array.from({ length: CURRENT_YEAR - 2009 }, (_, i) => String(CURRENT_YEAR - i));
+const YEARS = Array.from({ length: CURRENT_YEAR - 1989 }, (_, i) => String(CURRENT_YEAR - i));
 
 // Curated Austrian-market makes list (ordered by popularity)
 const MAKES = [
