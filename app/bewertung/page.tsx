@@ -1,0 +1,297 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from "@/components/ui";
+import { Navbar } from "../../components/navbar";
+
+interface ListingData {
+  make: string;
+  model: string;
+  year: string;
+  fuel: string;
+  transmission: string;
+  mileage: string;
+  condition: string;
+  hasAccident: boolean;
+  firstName: string;
+  lastName: string;
+  plz: string;
+  value: number;
+}
+
+const conditionLabels: Record<string, string> = {
+  EXCELLENT: "Sehr gut",
+  GOOD: "Gut",
+  FAIR: "Gebraucht",
+  DAMAGED: "Beschädigt",
+};
+
+const fuelLabels: Record<string, string> = {
+  benzin: "Benzin",
+  diesel: "Diesel",
+  elektro: "Elektro",
+  hybrid: "Hybrid",
+  lpg: "LPG",
+};
+
+function formatEur(cents: number): string {
+  return (cents / 100).toLocaleString("de-AT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+}
+
+const MOCK_LISTING: ListingData = {
+  make: "Volkswagen",
+  model: "Golf",
+  year: "2019",
+  fuel: "benzin",
+  transmission: "manual",
+  mileage: "82000",
+  condition: "GOOD",
+  hasAccident: false,
+  firstName: "Max",
+  lastName: "Mustermann",
+  plz: "1010",
+  value: 1540000,
+};
+
+export default function BewertungPage() {
+  const [listing, setListing] = useState<ListingData | null>(null);
+  const [showOffers, setShowOffers] = useState(false);
+  const [confettiActive, setConfettiActive] = useState(false);
+  const [acceptedOffer, setAcceptedOffer] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("nimm_listing");
+      setListing(raw ? (JSON.parse(raw) as ListingData) : MOCK_LISTING);
+    } catch {
+      setListing(MOCK_LISTING);
+    }
+
+    // Trigger confetti
+    setConfettiActive(true);
+    const t1 = setTimeout(() => setConfettiActive(false), 3500);
+
+    // Show dealer offers after 2s
+    const t2 = setTimeout(() => setShowOffers(true), 2000);
+
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
+  if (!listing) return null;
+
+  const value = listing.value;
+  const low = Math.round(value * 0.9);
+  const high = Math.round(value * 1.1);
+
+  const dealers = [
+    {
+      name: "Autohaus Müller Wien",
+      pct: 0.92,
+      note: "Sofortige Abholung möglich",
+      badge: "Schnellste Abwicklung",
+      badgeColor: "bg-green-100 text-green-700",
+    },
+    {
+      name: "Fahrzeugcenter Graz GmbH",
+      pct: 0.88,
+      note: "Besichtigung in 2 Tagen",
+      badge: "Geprüfter Händler",
+      badgeColor: "bg-blue-100 text-blue-700",
+    },
+    {
+      name: "AutoGroup Salzburg",
+      pct: 0.85,
+      note: "Barzahlung",
+      badge: "Barzahlung",
+      badgeColor: "bg-purple-100 text-purple-700",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar app="nimm" />
+
+      {/* CSS Confetti */}
+      {confettiActive && (
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
+          <style>{`
+            @keyframes confetti-fall {
+              0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+              100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+            }
+            .confetti-piece {
+              position: absolute;
+              width: 10px;
+              height: 10px;
+              animation: confetti-fall linear forwards;
+            }
+          `}</style>
+          {Array.from({ length: 60 }).map((_, i) => (
+            <div
+              key={i}
+              className="confetti-piece"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDuration: `${2 + Math.random() * 2}s`,
+                animationDelay: `${Math.random() * 1}s`,
+                backgroundColor: ["#1a56db", "#22c55e", "#f59e0b", "#ec4899", "#8b5cf6"][Math.floor(Math.random() * 5)],
+                borderRadius: Math.random() > 0.5 ? "50%" : "0",
+                transform: `rotate(${Math.random() * 360}deg)`,
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
+        {/* Main valuation card */}
+        <Card className="border-2 border-green-200 shadow-lg">
+          <CardHeader className="text-center pb-2 bg-gradient-to-br from-green-50 to-blue-50 rounded-t-xl">
+            <div className="text-5xl mb-2">🎉</div>
+            <CardTitle className="text-2xl text-foreground">Geschätzter Marktwert</CardTitle>
+            <p className="text-muted-foreground text-sm mt-1">Basierend auf aktuellen Marktdaten in Österreich</p>
+          </CardHeader>
+          <CardContent className="text-center pt-6 pb-8">
+            <div className="text-6xl font-bold text-green-600 mb-2">
+              {formatEur(value)}
+            </div>
+            <p className="text-muted-foreground text-sm mb-1">Erwartete Preisspanne:</p>
+            <div className="text-xl font-semibold text-foreground mb-6">
+              {formatEur(low)} – {formatEur(high)}
+            </div>
+
+            {/* Car summary */}
+            <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto mb-6">
+              <div className="bg-gray-50 rounded-lg p-3 text-center">
+                <div className="text-lg mb-1">🚗</div>
+                <div className="text-xs font-medium">{listing.make}</div>
+                <div className="text-xs text-muted-foreground">{listing.model}</div>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3 text-center">
+                <div className="text-lg mb-1">📅</div>
+                <div className="text-xs font-medium">{listing.year}</div>
+                <div className="text-xs text-muted-foreground">Baujahr</div>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3 text-center">
+                <div className="text-lg mb-1">📊</div>
+                <div className="text-xs font-medium">{Number(listing.mileage).toLocaleString("de-AT")} km</div>
+                <div className="text-xs text-muted-foreground">{conditionLabels[listing.condition] ?? listing.condition}</div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 justify-center">
+              <Badge className="bg-blue-100 text-blue-700 border-0">{fuelLabels[listing.fuel] ?? listing.fuel}</Badge>
+              <Badge className="bg-gray-100 text-gray-700 border-0">
+                {listing.transmission === "auto" ? "Automatik" : "Schaltgetriebe"}
+              </Badge>
+              {listing.hasAccident && <Badge className="bg-red-100 text-red-700 border-0">Unfallfahrzeug</Badge>}
+              <Badge className="bg-green-100 text-green-700 border-0">PLZ {listing.plz}</Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Dealer loading / offers */}
+        <Card>
+          <CardContent className="p-6">
+            {!showOffers ? (
+              <div className="text-center py-8">
+                <div className="text-3xl mb-4">📡</div>
+                <p className="font-semibold text-lg mb-2">3 Händler werden benachrichtigt</p>
+                <div className="flex justify-center gap-1 mt-3">
+                  <style>{`
+                    @keyframes bounce-dot {
+                      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+                      40% { transform: scale(1); opacity: 1; }
+                    }
+                    .dot { animation: bounce-dot 1.2s infinite ease-in-out; }
+                    .dot:nth-child(2) { animation-delay: 0.2s; }
+                    .dot:nth-child(3) { animation-delay: 0.4s; }
+                  `}</style>
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="dot w-3 h-3 bg-primary rounded-full" />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="w-2 h-2 bg-green-500 rounded-full" />
+                  <h3 className="font-semibold text-lg">3 Händlerangebote eingegangen</h3>
+                  <Badge className="bg-green-100 text-green-700 border-0 ml-auto">Neu</Badge>
+                </div>
+                <div className="space-y-4">
+                  {dealers.map((dealer, idx) => {
+                    const offer = Math.round(value * dealer.pct);
+                    const accepted = acceptedOffer === dealer.name;
+                    return (
+                      <div
+                        key={dealer.name}
+                        className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
+                          accepted
+                            ? "border-green-400 bg-green-50"
+                            : "border-border hover:border-primary/30"
+                        }`}
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-sm">{dealer.name}</span>
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${dealer.badgeColor}`}>
+                              {dealer.badge}
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{dealer.note}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <div className="text-yellow-400 text-xs">{"★".repeat(5 - idx)}</div>
+                            <span className="text-xs text-muted-foreground">{5 - idx}.0 Bewertung</span>
+                          </div>
+                        </div>
+                        <div className="text-right ml-4">
+                          <div className="text-xl font-bold text-green-600">{formatEur(offer)}</div>
+                          <div className="text-xs text-muted-foreground mb-2">{Math.round(dealer.pct * 100)}% des Schätzwerts</div>
+                          {accepted ? (
+                            <div className="flex items-center gap-1 text-green-600 text-xs font-medium">
+                              <span>✓</span> Angenommen
+                            </div>
+                          ) : (
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                setAcceptedOffer(dealer.name);
+                                alert(`Glückwunsch! ${dealer.name} kontaktiert Sie in Kürze.`);
+                              }}
+                            >
+                              Angebot annehmen
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link href="/auto-bewerten">
+            <Button variant="outline" className="w-full sm:w-auto">
+              ← Neue Bewertung
+            </Button>
+          </Link>
+          <Link href="/seller">
+            <Button variant="outline" className="w-full sm:w-auto">
+              Meine Inserate →
+            </Button>
+          </Link>
+        </div>
+
+        <p className="text-center text-xs text-muted-foreground">
+          Die Bewertung ist ein Schätzwert basierend auf aktuellen Marktdaten und ersetzt kein professionelles Gutachten.
+        </p>
+      </div>
+    </div>
+  );
+}
