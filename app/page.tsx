@@ -4,6 +4,7 @@ import { Navbar } from "../components/navbar";
 import { BRANDS } from "@/lib/brands";
 import { FAQ } from "@/lib/faq";
 import { QuickEstimator } from "@/components/quick-estimator";
+import { BrandTicker } from "@/components/brand-ticker";
 import { createClient } from "@supabase/supabase-js";
 
 export const revalidate = 3600; // refresh stats every hour
@@ -146,7 +147,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Stats bar (live from Supabase) ───────────────────── */}
-      <section className="bg-primary py-5 px-4" aria-label="Plattform-Kennzahlen">
+      <section className="bg-[#1C1917] py-5 px-4 border-t border-white/5" aria-label="Plattform-Kennzahlen">
         <div className="max-w-4xl mx-auto grid grid-cols-3 gap-6 text-center">
           {[
             {
@@ -160,8 +161,8 @@ export default async function HomePage() {
             { value: "Ø 94%", label: "des Schätzpreises erzielt" },
           ].map(({ value, label }) => (
             <div key={label}>
-              <div className="text-xl md:text-2xl font-bold text-white">{value}</div>
-              <div className="text-primary-light/80 text-xs md:text-sm mt-0.5">{label}</div>
+              <div className="text-xl md:text-2xl font-bold text-amber">{value}</div>
+              <div className="text-stone-400 text-xs md:text-sm mt-0.5">{label}</div>
             </div>
           ))}
         </div>
@@ -252,51 +253,20 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Brands grid ──────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-[#FAFAF9]" aria-label="Beliebte Marken">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10">
-            <span className="inline-block bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-3">
-              Alle Marken
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-              Wir bewerten jede Marke
-            </h2>
-            <p className="text-foreground-muted max-w-xl mx-auto">
-              Von VW bis Tesla – finde deine Marke und starte die kostenlose Bewertung.
-            </p>
-          </div>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-            {BRANDS.map((b) => (
-              <Link
-                key={b.slug}
-                href={`/auto-bewerten/${b.slug}`}
-                className="group flex flex-col items-center justify-center gap-2 px-3 py-4 rounded-lg bg-white border border-border hover:border-primary hover:shadow-soft transition-all"
-                aria-label={`${b.name} bewerten`}
-              >
-                {b.hasLogo ? (
-                  <span className="h-10 flex items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={`/logos/${b.slug}.svg`}
-                      alt=""
-                      aria-hidden="true"
-                      loading="lazy"
-                      className="max-h-10 max-w-[72px] object-contain transition-transform group-hover:scale-105"
-                    />
-                  </span>
-                ) : (
-                  <span className="h-10 flex items-center justify-center text-lg font-bold text-foreground/60">
-                    {b.name}
-                  </span>
-                )}
-                <span className="text-xs font-semibold text-foreground text-center">
-                  {b.name}
-                </span>
-              </Link>
-            ))}
-          </div>
+      {/* ── Brands ticker ────────────────────────────────────── */}
+      <section className="py-20 bg-[#FAFAF9]" aria-label="Beliebte Marken">
+        <div className="text-center mb-10 px-4">
+          <span className="inline-block bg-amber/10 text-amber-dark text-xs font-semibold px-3 py-1 rounded-full mb-3">
+            Alle Marken
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+            Wir bewerten jede Marke
+          </h2>
+          <p className="text-foreground-muted max-w-xl mx-auto">
+            Von VW bis Tesla – finde deine Marke und starte die kostenlose Bewertung.
+          </p>
         </div>
+        <BrandTicker brands={BRANDS} />
       </section>
 
       {/* ── FAQ teaser ───────────────────────────────────────── */}

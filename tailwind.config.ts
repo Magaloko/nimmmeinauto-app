@@ -43,6 +43,16 @@ const config: Config = {
         "2xl": "24px",
         full: "9999px",
       },
+      keyframes: {
+        marquee: {
+          "0%":   { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+      },
+      animation: {
+        marquee: "marquee 34s linear infinite",
+        "marquee-slow": "marquee 52s linear infinite",
+      },
       boxShadow: {
         soft: "0 1px 3px 0 rgba(0,0,0,0.06), 0 1px 2px 0 rgba(0,0,0,0.04)",
         card: "0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04)",
