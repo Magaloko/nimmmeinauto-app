@@ -146,7 +146,7 @@ function BewertungContent() {
   const high = Math.round(value * 1.1);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background font-sans">
       <Navbar app="nimm" />
 
       {/* CSS Confetti */}
@@ -172,7 +172,7 @@ function BewertungContent() {
                 left: `${Math.random() * 100}%`,
                 animationDuration: `${2 + Math.random() * 2}s`,
                 animationDelay: `${Math.random() * 1}s`,
-                backgroundColor: ["#1a56db", "#22c55e", "#f59e0b", "#ec4899", "#8b5cf6"][Math.floor(Math.random() * 5)],
+                backgroundColor: ["#2563EB", "#22c55e", "#F59E0B", "#ec4899", "#8b5cf6"][Math.floor(Math.random() * 5)],
                 borderRadius: Math.random() > 0.5 ? "50%" : "0",
                 transform: `rotate(${Math.random() * 360}deg)`,
               }}
@@ -183,43 +183,43 @@ function BewertungContent() {
 
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
         {/* Main valuation card */}
-        <Card className="border-2 border-green-200 shadow-lg">
-          <CardHeader className="text-center pb-2 bg-gradient-to-br from-green-50 to-blue-50 rounded-t-xl">
+        <Card className="border-2 border-amber/30 shadow-warm">
+          <CardHeader className="text-center pb-2 bg-gradient-to-br from-amber/10 to-primary/10 rounded-t-xl">
             <div className="text-5xl mb-2">🎉</div>
             <CardTitle className="text-2xl text-foreground">Geschätzter Marktwert</CardTitle>
-            <p className="text-muted-foreground text-sm mt-1">Basierend auf aktuellen Marktdaten in Österreich</p>
+            <p className="text-foreground-muted text-sm mt-1">Basierend auf aktuellen Marktdaten in Österreich</p>
           </CardHeader>
           <CardContent className="text-center pt-6 pb-8">
-            <div className="text-6xl font-bold text-green-600 mb-2">
+            <div className="text-6xl font-bold text-amber-dark mb-2">
               {formatEur(value)}
             </div>
-            <p className="text-muted-foreground text-sm mb-1">Erwartete Preisspanne:</p>
+            <p className="text-foreground-muted text-sm mb-1">Erwartete Preisspanne:</p>
             <div className="text-xl font-semibold text-foreground mb-6">
               {formatEur(low)} – {formatEur(high)}
             </div>
 
             {/* Car summary */}
             <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto mb-6">
-              <div className="bg-gray-50 rounded-lg p-3 text-center">
+              <div className="bg-muted rounded-xl p-3 text-center">
                 <div className="text-lg mb-1">🚗</div>
-                <div className="text-xs font-medium">{listing.make}</div>
-                <div className="text-xs text-muted-foreground">{listing.model}</div>
+                <div className="text-xs font-medium text-foreground">{listing.make}</div>
+                <div className="text-xs text-foreground-muted">{listing.model}</div>
               </div>
-              <div className="bg-gray-50 rounded-lg p-3 text-center">
+              <div className="bg-muted rounded-xl p-3 text-center">
                 <div className="text-lg mb-1">📅</div>
-                <div className="text-xs font-medium">{listing.year}</div>
-                <div className="text-xs text-muted-foreground">Baujahr</div>
+                <div className="text-xs font-medium text-foreground">{listing.year}</div>
+                <div className="text-xs text-foreground-muted">Baujahr</div>
               </div>
-              <div className="bg-gray-50 rounded-lg p-3 text-center">
+              <div className="bg-muted rounded-xl p-3 text-center">
                 <div className="text-lg mb-1">📊</div>
-                <div className="text-xs font-medium">{listing.mileage.toLocaleString("de-AT")} km</div>
-                <div className="text-xs text-muted-foreground">{conditionLabels[listing.condition] ?? listing.condition}</div>
+                <div className="text-xs font-medium text-foreground">{listing.mileage.toLocaleString("de-AT")} km</div>
+                <div className="text-xs text-foreground-muted">{conditionLabels[listing.condition] ?? listing.condition}</div>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-2 justify-center">
               <Badge className="bg-blue-100 text-blue-700 border-0">{fuelLabels[listing.fuel] ?? listing.fuel}</Badge>
-              <Badge className="bg-gray-100 text-gray-700 border-0">
+              <Badge className="bg-muted text-foreground-muted border-0">
                 {listing.transmission === "auto" ? "Automatik" : "Schaltgetriebe"}
               </Badge>
               {listing.has_accident_history && <Badge className="bg-red-100 text-red-700 border-0">Unfallfahrzeug</Badge>}
@@ -229,12 +229,12 @@ function BewertungContent() {
         </Card>
 
         {/* Dealer loading / offers */}
-        <Card>
+        <Card className="shadow-card">
           <CardContent className="p-6">
             {!showOffers ? (
               <div className="text-center py-8">
                 <div className="text-3xl mb-4">📡</div>
-                <p className="font-semibold text-lg mb-2">3 Händler werden benachrichtigt</p>
+                <p className="font-semibold text-lg mb-2 text-foreground">3 Händler werden benachrichtigt</p>
                 <div className="flex justify-center gap-1 mt-3">
                   <style>{`
                     @keyframes bounce-dot {
@@ -254,47 +254,61 @@ function BewertungContent() {
               <div>
                 <div className="flex items-center gap-2 mb-5">
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
-                  <h3 className="font-semibold text-lg">{offers.length} Händlerangebote eingegangen</h3>
+                  <h3 className="font-semibold text-lg text-foreground">{offers.length} Händlerangebote eingegangen</h3>
                   <Badge className="bg-green-100 text-green-700 border-0 ml-auto">Neu</Badge>
                 </div>
                 <div className="space-y-4">
                   {offers.map((offer, idx) => {
                     const accepted = acceptedOffer === offer.id;
                     const dealerMeta = DEALER_BADGES[idx % DEALER_BADGES.length];
+                    const isBest = idx === 0;
                     return (
                       <div
                         key={offer.id}
                         className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
                           accepted
-                            ? "border-green-400 bg-green-50"
+                            ? "border-amber/40 bg-amber/5"
+                            : isBest
+                            ? "border-amber/30 ring-2 ring-amber/30 bg-amber/5"
                             : "border-border hover:border-primary/30"
                         }`}
                       >
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold text-sm">{offer.dealer_name}</span>
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            {isBest && !accepted && (
+                              <span className="text-xs px-2 py-0.5 rounded-full font-semibold bg-amber/20 text-amber-dark">
+                                ⭐ Bestes Angebot
+                              </span>
+                            )}
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center">
+                                {offer.dealer_name[0]}
+                              </div>
+                              <span className="font-semibold text-sm text-foreground">{offer.dealer_name}</span>
+                            </div>
                             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${dealerMeta.badgeColor}`}>
                               {dealerMeta.badge}
                             </span>
                           </div>
-                          {offer.message && <p className="text-xs text-muted-foreground">{offer.message}</p>}
-                          <div className="flex items-center gap-2 mt-1">
-                            <div className="text-yellow-400 text-xs">{"★".repeat(Math.max(3, 5 - idx))}</div>
-                            <span className="text-xs text-muted-foreground">{Math.max(3, 5 - idx)}.0 Bewertung</span>
+                          {offer.message && <p className="text-xs text-foreground-muted ml-10">{offer.message}</p>}
+                          <div className="flex items-center gap-2 mt-1 ml-10">
+                            <div className="text-amber text-xs">{"★".repeat(Math.max(3, 5 - idx))}</div>
+                            <span className="text-xs text-foreground-muted">{Math.max(3, 5 - idx)}.0 Bewertung</span>
                           </div>
                         </div>
                         <div className="text-right ml-4">
-                          <div className="text-xl font-bold text-green-600">{formatEur(offer.amount_cents)}</div>
-                          <div className="text-xs text-muted-foreground mb-2">
+                          <div className="text-xl font-bold text-amber-dark">{formatEur(offer.amount_cents)}</div>
+                          <div className="text-xs text-foreground-muted mb-2">
                             {Math.round((offer.amount_cents / value) * 100)}% des Schätzwerts
                           </div>
                           {accepted ? (
-                            <div className="flex items-center gap-1 text-green-600 text-xs font-medium">
+                            <div className="flex items-center gap-1 text-amber-dark text-xs font-semibold">
                               <span>✓</span> Angenommen
                             </div>
                           ) : (
                             <Button
                               size="sm"
+                              className="bg-primary hover:bg-primary-dark text-white font-semibold"
                               onClick={() => {
                                 setAcceptedOffer(offer.id);
                                 alert(`Glückwunsch! ${offer.dealer_name} kontaktiert Sie in Kürze.`);
@@ -327,7 +341,7 @@ function BewertungContent() {
           </Link>
         </div>
 
-        <p className="text-center text-xs text-muted-foreground">
+        <p className="text-center text-xs text-foreground-muted">
           Die Bewertung ist ein Schätzwert basierend auf aktuellen Marktdaten und ersetzt kein professionelles Gutachten.
         </p>
       </div>

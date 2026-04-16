@@ -205,37 +205,42 @@ export default function AutoBewertenPage() {
   const progressPct = (step / 4) * 100;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background font-sans">
       <Navbar app="nimm" />
+
+      {/* Hero bar */}
+      <div className="bg-[#1C1917] text-white py-3 px-4 text-center text-sm font-medium">
+        🚗 Bewertung in 2 Minuten · Kostenlos & unverbindlich
+      </div>
 
       <div className="max-w-2xl mx-auto px-4 py-10">
         {/* Progress bar */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-primary">Schritt {step} von 4</span>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm font-semibold text-primary">Schritt {step} von 4</span>
+            <span className="text-sm text-foreground-muted">
               {step === 1 && "Fahrzeugdaten"}
               {step === 2 && "Fahrzeugzustand"}
               {step === 3 && "Fotos"}
               {step === 4 && "Kontaktdaten"}
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-muted rounded-full h-2">
             <div
-              className="bg-primary h-2 rounded-full transition-all duration-500"
+              className="bg-amber h-2 rounded-full transition-all duration-500"
               style={{ width: `${progressPct}%` }}
             />
           </div>
-          <div className="flex justify-between mt-2">
+          <div className="flex justify-between mt-3">
             {[1, 2, 3, 4].map((s) => (
               <div
                 key={s}
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-all ${
+                className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-all ${
                   s < step
-                    ? "bg-primary border-primary text-white"
+                    ? "bg-amber border-amber text-foreground"
                     : s === step
-                    ? "bg-white border-primary text-primary"
-                    : "bg-white border-gray-300 text-gray-400"
+                    ? "bg-primary border-primary text-white"
+                    : "bg-muted border-border text-foreground-muted"
                 }`}
               >
                 {s < step ? "✓" : s}
@@ -244,14 +249,14 @@ export default function AutoBewertenPage() {
           </div>
         </div>
 
-        <Card>
+        <Card className="shadow-card rounded-2xl">
           <CardContent className="p-8">
             {/* ─── Step 1: Fahrzeugdaten ─────────────────────────────── */}
             {step === 1 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold mb-1">Fahrzeugdaten</h2>
-                  <p className="text-muted-foreground text-sm">Erzähl uns von deinem Auto.</p>
+                  <h2 className="text-2xl font-bold text-foreground mb-1">Fahrzeugdaten</h2>
+                  <p className="text-foreground-muted text-sm">Erzähl uns von deinem Auto.</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -261,7 +266,7 @@ export default function AutoBewertenPage() {
                       id="make"
                       value={form.make}
                       onChange={(e) => { set("make", e.target.value); set("model", ""); }}
-                      className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full h-10 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="">Marke wählen</option>
                       {MAKES.map((m) => <option key={m} value={m}>{m}</option>)}
@@ -276,7 +281,7 @@ export default function AutoBewertenPage() {
                       value={form.model}
                       onChange={(e) => set("model", e.target.value)}
                       disabled={!form.make}
-                      className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                      className="w-full h-10 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
                     >
                       <option value="">Modell wählen</option>
                       {(MODELS[form.make] ?? []).map((m) => <option key={m} value={m}>{m}</option>)}
@@ -291,7 +296,7 @@ export default function AutoBewertenPage() {
                     id="year"
                     value={form.year}
                     onChange={(e) => set("year", e.target.value)}
-                    className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">Jahr wählen</option>
                     {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
@@ -307,10 +312,10 @@ export default function AutoBewertenPage() {
                         key={key}
                         type="button"
                         onClick={() => set("fuel", key)}
-                        className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-all text-xs font-medium ${
+                        className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 transition-all text-xs font-medium ${
                           form.fuel === key
-                            ? "border-primary bg-accent text-primary"
-                            : "border-border hover:border-primary/50"
+                            ? "border-primary bg-primary/5 text-primary"
+                            : "border-border hover:border-primary/50 text-foreground-muted"
                         }`}
                       >
                         <span className="text-xl">{icon}</span>
@@ -332,10 +337,10 @@ export default function AutoBewertenPage() {
                         key={key}
                         type="button"
                         onClick={() => set("transmission", key)}
-                        className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all text-sm font-medium ${
+                        className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-sm font-medium ${
                           form.transmission === key
-                            ? "border-primary bg-accent text-primary"
-                            : "border-border hover:border-primary/50"
+                            ? "border-primary bg-primary/5 text-primary"
+                            : "border-border hover:border-primary/50 text-foreground-muted"
                         }`}
                       >
                         <span className="text-2xl">{icon}</span>
@@ -352,8 +357,8 @@ export default function AutoBewertenPage() {
             {step === 2 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold mb-1">Fahrzeugzustand</h2>
-                  <p className="text-muted-foreground text-sm">Je genauer, desto besser das Angebot.</p>
+                  <h2 className="text-2xl font-bold text-foreground mb-1">Fahrzeugzustand</h2>
+                  <p className="text-foreground-muted text-sm">Je genauer, desto besser das Angebot.</p>
                 </div>
 
                 <div className="space-y-1.5">
@@ -377,32 +382,32 @@ export default function AutoBewertenPage() {
                         key={key}
                         type="button"
                         onClick={() => set("condition", key)}
-                        className={`flex flex-col gap-1 p-4 rounded-lg border-2 text-left transition-all ${
+                        className={`flex flex-col gap-1 p-4 rounded-xl border-2 text-left transition-all ${
                           form.condition === key
-                            ? "border-primary bg-accent"
+                            ? "border-primary bg-primary/5"
                             : "border-border hover:border-primary/50"
                         }`}
                       >
                         <span className="text-2xl">{emoji}</span>
-                        <span className="font-semibold text-sm">{label}</span>
-                        <span className="text-xs text-muted-foreground">{desc}</span>
+                        <span className="font-semibold text-sm text-foreground">{label}</span>
+                        <span className="text-xs text-foreground-muted">{desc}</span>
                       </button>
                     ))}
                   </div>
                   {errors.condition && <p className="text-destructive text-xs">{errors.condition}</p>}
                 </div>
 
-                <div className="flex items-center gap-3 p-4 rounded-lg border border-border bg-gray-50">
+                <div className="flex items-center gap-3 p-4 rounded-xl border border-border bg-muted/50">
                   <input
                     id="accident"
                     type="checkbox"
                     checked={form.hasAccident}
                     onChange={(e) => set("hasAccident", e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300 text-primary"
+                    className="w-4 h-4 rounded border-border text-primary"
                   />
                   <div>
                     <Label htmlFor="accident" className="cursor-pointer">Unfallfahrzeug?</Label>
-                    <p className="text-xs text-muted-foreground">War das Fahrzeug in einen Unfall verwickelt?</p>
+                    <p className="text-xs text-foreground-muted">War das Fahrzeug in einen Unfall verwickelt?</p>
                   </div>
                 </div>
 
@@ -422,25 +427,26 @@ export default function AutoBewertenPage() {
             {step === 3 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold mb-1">Fotos hochladen</h2>
-                  <p className="text-muted-foreground text-sm">Gute Fotos = bessere Angebote.</p>
+                  <h2 className="text-2xl font-bold text-foreground mb-1">Fotos hochladen</h2>
+                  <p className="text-foreground-muted text-sm">Gute Fotos = bessere Angebote.</p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
                   {["Vorne links", "Vorne rechts", "Hinten links", "Hinten rechts", "Innenraum", "Tacho"].map((label) => (
                     <div
                       key={label}
-                      className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:bg-accent/50 transition-all cursor-pointer group"
+                      className="aspect-square border-2 border-dashed border-stone-300 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group"
                     >
-                      <span className="text-3xl group-hover:scale-110 transition-transform">📷</span>
-                      <span className="text-xs text-muted-foreground text-center px-2">{label}</span>
+                      <span className="text-2xl group-hover:scale-110 transition-transform">📷</span>
+                      <span className="text-xs text-foreground-muted text-center px-2">Foto hinzufügen</span>
+                      <span className="text-xs text-foreground-muted/60 text-center px-2">{label}</span>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex items-start gap-3 p-4 rounded-lg bg-blue-50 border border-blue-200">
-                  <span className="text-blue-500 text-lg mt-0.5">ℹ️</span>
-                  <p className="text-sm text-blue-700">
+                <div className="flex items-start gap-3 p-4 rounded-xl bg-primary/5 border border-primary/20">
+                  <span className="text-primary text-lg mt-0.5">ℹ️</span>
+                  <p className="text-sm text-primary/80">
                     <strong>Demo-Hinweis:</strong> Fotos werden in der finalen Version direkt gespeichert. Du kannst jetzt ohne Fotos fortfahren.
                   </p>
                 </div>
@@ -451,8 +457,8 @@ export default function AutoBewertenPage() {
             {step === 4 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold mb-1">Kontaktdaten</h2>
-                  <p className="text-muted-foreground text-sm">Damit Händler dich kontaktieren können.</p>
+                  <h2 className="text-2xl font-bold text-foreground mb-1">Kontaktdaten</h2>
+                  <p className="text-foreground-muted text-sm">Damit Händler dich kontaktieren können.</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -514,15 +520,15 @@ export default function AutoBewertenPage() {
                   {errors.plz && <p className="text-destructive text-xs">{errors.plz}</p>}
                 </div>
 
-                <div className="flex items-start gap-3 p-4 rounded-lg border border-border bg-gray-50">
+                <div className="flex items-start gap-3 p-4 rounded-xl border border-border bg-muted/50">
                   <input
                     id="agb"
                     type="checkbox"
                     checked={form.agb}
                     onChange={(e) => set("agb", e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300 text-primary mt-0.5"
+                    className="w-4 h-4 rounded border-border text-primary mt-0.5"
                   />
-                  <Label htmlFor="agb" className="cursor-pointer text-sm font-normal leading-relaxed">
+                  <Label htmlFor="agb" className="cursor-pointer text-sm font-normal leading-relaxed text-foreground">
                     Ich stimme den{" "}
                     <a href="#" className="text-primary underline">Allgemeinen Geschäftsbedingungen</a>{" "}
                     und der{" "}
@@ -545,7 +551,7 @@ export default function AutoBewertenPage() {
               )}
 
               {step < 3 && (
-                <Button onClick={handleNext}>
+                <Button onClick={handleNext} className="bg-primary hover:bg-primary-dark text-white font-semibold">
                   Weiter →
                 </Button>
               )}
@@ -555,7 +561,7 @@ export default function AutoBewertenPage() {
                   <Button variant="outline" onClick={() => setStep(4)}>
                     Weiter ohne Fotos
                   </Button>
-                  <Button onClick={() => setStep(4)}>
+                  <Button onClick={() => setStep(4)} className="bg-primary hover:bg-primary-dark text-white font-semibold">
                     Weiter →
                   </Button>
                 </div>
@@ -567,19 +573,19 @@ export default function AutoBewertenPage() {
                     onClick={handleSubmit}
                     disabled={isSubmitting}
                     size="lg"
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    className="bg-amber hover:bg-amber-dark text-foreground font-bold"
                   >
                     {isSubmitting ? "Wird gespeichert..." : "Bewertung berechnen →"}
                   </Button>
-                  {submitError && <p className="text-red-500 text-sm">{submitError}</p>}
+                  {submitError && <p className="text-destructive text-sm">{submitError}</p>}
                 </div>
               )}
             </div>
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          🔒 Deine Daten werden verschlüsselt übertragen und nicht ohne deine Zustimmung weitergegeben.
+        <p className="text-center text-xs text-foreground-muted mt-6">
+          🔒 SSL-verschlüsselt · DSGVO-konform · Daten werden nicht ohne Zustimmung weitergegeben
         </p>
       </div>
     </div>
