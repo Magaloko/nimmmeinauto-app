@@ -26,9 +26,6 @@ export function Navbar({ app = "nimm" }: { app?: string }) {
           <Link href="/auto-bewerten" className="px-4 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition-all">
             Auto bewerten
           </Link>
-          <Link href="#how" className="px-4 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition-all">
-            So funktioniert&apos;s
-          </Link>
         </div>
 
         {/* CTA */}

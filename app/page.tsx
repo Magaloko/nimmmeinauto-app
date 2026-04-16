@@ -45,11 +45,6 @@ export default function HomePage() {
                     Jetzt kostenlos bewerten
                   </Button>
                 </Link>
-                <Link href="#how">
-                  <Button size="lg" className="bg-white/15 hover:bg-white/25 text-white border border-white/40 text-base h-12 w-full sm:w-auto backdrop-blur-sm">
-                    Wie es funktioniert
-                  </Button>
-                </Link>
               </div>
               {/* Mini trust signals */}
               <div className="flex flex-wrap gap-4 text-sm text-stone-400">
