@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { ContactWidget } from "@/components/contact-widget";
+import { CookieBanner } from "@/components/cookie-banner";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -41,8 +42,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="de">
       <body className={`${jakarta.variable} font-sans antialiased`}>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-amber-500 focus:text-stone-900 focus:font-semibold focus:rounded-lg focus:shadow-lg"
+        >
+          Zum Inhalt springen
+        </a>
         {children}
         <ContactWidget />
+        <CookieBanner />
       </body>
     </html>
   );

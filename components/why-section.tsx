@@ -277,7 +277,7 @@ export function WhySection({ stats: _stats }: WhySectionProps) {
               So funktioniert&apos;s
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-              In 4 Schritten zum besten Preis
+              Auto in 4 Schritten verkaufen – zum besten Preis
             </h2>
             <p className="text-stone-400 max-w-xl mx-auto">
               Schnell, einfach und ohne Stress – dein Auto verkaufen war noch nie so unkompliziert.

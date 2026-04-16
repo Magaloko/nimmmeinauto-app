@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Navbar } from "../../components/navbar";
 
 export const metadata: Metadata = {
-  title: "Impressum · NimmMeinAuto",
-  description: "Impressum und Offenlegung gemäß § 5 ECG und § 25 MedienG.",
+  title: "Impressum NimmMeinAuto GmbH – Angaben gemäß ECG & MedienG",
+  description: "Impressum der NimmMeinAuto GmbH Wien. Offenlegung gemäß § 5 ECG und § 25 MedienG – Kontakt, Firmenbuch, UID und Verantwortliche.",
   alternates: { canonical: "https://nimmmeinauto.at/impressum" },
   robots: { index: true, follow: true },
 };
@@ -13,7 +13,7 @@ export default function ImpressumPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="max-w-3xl mx-auto px-4 py-16">
-        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8">Impressum</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8">Impressum NimmMeinAuto GmbH</h1>
 
         <section className="prose prose-stone max-w-none space-y-6 text-foreground">
           <p className="text-sm text-foreground-muted">

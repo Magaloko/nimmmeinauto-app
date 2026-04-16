@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Navbar } from "../../components/navbar";
 
 export const metadata: Metadata = {
-  title: "Allgemeine Geschäftsbedingungen · NimmMeinAuto",
-  description: "AGB der NimmMeinAuto-Plattform für Verkäufer und Händler in Österreich.",
+  title: "AGB NimmMeinAuto – Auto-Verkauf Österreich",
+  description: "AGB der NimmMeinAuto GmbH für den Auto-Verkauf in Österreich – Leistungen, Kosten und Haftung klar geregelt.",
   alternates: { canonical: "https://nimmmeinauto.at/agb" },
   robots: { index: true, follow: true },
 };
@@ -14,7 +14,7 @@ export default function AGBPage() {
       <Navbar />
       <main className="max-w-3xl mx-auto px-4 py-16">
         <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8">
-          Allgemeine Geschäftsbedingungen
+          AGB NimmMeinAuto – Auto-Verkauf
         </h1>
 
         <div className="space-y-8 text-foreground">

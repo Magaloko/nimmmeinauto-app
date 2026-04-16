@@ -5,9 +5,9 @@ import { Button } from "@/components/ui";
 import { FAQ } from "@/lib/faq";
 
 export const metadata: Metadata = {
-  title: "Häufige Fragen · NimmMeinAuto",
+  title: "Häufige Fragen zur Auto-Bewertung & Verkauf · NimmMeinAuto",
   description:
-    "Antworten auf die häufigsten Fragen rund um die kostenlose Fahrzeugbewertung, den Verkauf an Händler und die Abwicklung in Österreich.",
+    "Antworten auf häufige Fragen zur kostenlosen Fahrzeugbewertung, zum Auto verkaufen in Österreich und zur Abwicklung mit NimmMeinAuto.",
   alternates: { canonical: "https://nimmmeinauto.at/faq" },
   robots: { index: true, follow: true },
 };
@@ -31,7 +31,7 @@ export default function FAQPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main className="max-w-3xl mx-auto px-4 py-16">
-        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Häufige Fragen</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Häufige Fragen zur Auto-Bewertung und -Verkauf</h1>
         <p className="text-foreground-muted mb-10">
           Alles, was du über NimmMeinAuto wissen musst – kurz und klar beantwortet.
         </p>

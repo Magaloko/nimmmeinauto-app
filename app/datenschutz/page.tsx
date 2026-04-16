@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Navbar } from "../../components/navbar";
 
 export const metadata: Metadata = {
-  title: "Datenschutzerklärung · NimmMeinAuto",
-  description: "Informationen zur Verarbeitung personenbezogener Daten gemäß DSGVO und DSG.",
+  title: "Datenschutzerklärung NimmMeinAuto GmbH – DSGVO & DSG",
+  description: "Datenschutzerklärung der NimmMeinAuto GmbH gemäß DSGVO und DSG. Erfahre, wie wir deine Fahrzeug- und Kontaktdaten beim Auto verkaufen schützen.",
   alternates: { canonical: "https://nimmmeinauto.at/datenschutz" },
   robots: { index: true, follow: true },
 };
@@ -13,7 +13,7 @@ export default function DatenschutzPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="max-w-3xl mx-auto px-4 py-16">
-        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8">Datenschutzerklärung</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8">Datenschutzerklärung NimmMeinAuto GmbH</h1>
 
         <div className="space-y-8 text-foreground">
           <p className="text-sm text-foreground-muted">
