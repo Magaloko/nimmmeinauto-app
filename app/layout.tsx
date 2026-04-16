@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import Script from "next/script";
 import { ContactWidget } from "@/components/contact-widget";
 import { CookieBanner } from "@/components/cookie-banner";
+import { GoogleAnalytics } from "@/components/google-analytics";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -36,20 +36,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="de">
-      <head>
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-CNV2TR0MJB"
-          strategy="afterInteractive"
-        />
-        <Script id="gtag-init" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-CNV2TR0MJB');
-          `}
-        </Script>
-      </head>
       <body className={`${jakarta.variable} font-sans antialiased`}>
         <a
           href="#main-content"
@@ -60,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <ContactWidget />
         <CookieBanner />
+        <GoogleAnalytics />
       </body>
     </html>
   );

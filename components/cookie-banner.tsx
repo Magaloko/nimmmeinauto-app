@@ -18,6 +18,8 @@ export function CookieBanner() {
   function accept() {
     try {
       localStorage.setItem("cookie_consent", "accepted");
+      // Notify GoogleAnalytics component in same tab (storage event only fires cross-tab)
+      window.dispatchEvent(new StorageEvent("storage", { key: "cookie_consent", newValue: "accepted" }));
     } catch {}
     setVisible(false);
   }
@@ -39,8 +41,8 @@ export function CookieBanner() {
     >
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-start md:items-center gap-4">
         <p className="text-sm text-stone-300 flex-1">
-          Wir verwenden ausschließlich technisch notwendige Cookies für den Betrieb dieser Website.
-          Es werden keine Tracking- oder Marketing-Cookies gesetzt.{" "}
+          Wir nutzen technisch notwendige Cookies sowie – mit deiner Zustimmung – Google Analytics
+          zur anonymen Reichweitenmessung. Ohne Zustimmung werden keine Tracking-Cookies gesetzt.{" "}
           <a
             href="/datenschutz"
             className="underline text-amber-400 hover:text-amber-300 focus:outline-none focus:ring-1 focus:ring-amber-400 rounded"
