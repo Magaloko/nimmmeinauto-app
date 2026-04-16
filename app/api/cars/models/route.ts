@@ -34,22 +34,25 @@ function toNHTSAName(make: string): string {
 
 export async function GET(req: NextRequest) {
   const make = req.nextUrl.searchParams.get('make') || '';
+  const year = req.nextUrl.searchParams.get('year') || '';
   if (!make) return NextResponse.json([]);
 
   const key = normalize(make);
 
   // Try local first for European brands we know NHTSA won't cover well
+  // (year doesn't change these lists, so skip year filtering for local brands)
   if (LOCAL_MODELS[key]) {
     return NextResponse.json(LOCAL_MODELS[key]);
   }
 
-  // Try NHTSA
+  // Try NHTSA — use year-specific endpoint when year is provided
   try {
     const nhtsa = toNHTSAName(make);
-    const res = await fetch(
-      `https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/${encodeURIComponent(nhtsa)}?format=json`,
-      { next: { revalidate: 86400 } }
-    );
+    const url = year
+      ? `https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMakeYear/make/${encodeURIComponent(nhtsa)}/modelyear/${encodeURIComponent(year)}?format=json`
+      : `https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/${encodeURIComponent(nhtsa)}?format=json`;
+
+    const res = await fetch(url, { next: { revalidate: 86400 } });
     const data = await res.json() as { Results?: { Model_Name: string }[] };
     const models = (data.Results || [])
       .map(r => r.Model_Name)

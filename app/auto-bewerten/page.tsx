@@ -278,6 +278,10 @@ export default function AutoBewertenPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [models, setModels] = useState<string[]>([]);
   const [loadingModels, setLoadingModels] = useState(false);
+  const [vinInput, setVinInput] = useState('');
+  const [vinOpen, setVinOpen] = useState(false);
+  const [vinLoading, setVinLoading] = useState(false);
+  const [vinResult, setVinResult] = useState<null | { label: string; type: 'success' | 'partial' | 'error'; specs?: string }>(null);
   const [form, setForm] = useState<FormData>({
     make: "",
     model: "",
@@ -301,11 +305,13 @@ export default function AutoBewertenPage() {
     setErrors((prev) => { const next = { ...prev }; delete next[field]; return next; });
   }
 
-  const fetchModels = useCallback(async (make: string) => {
+  const fetchModels = useCallback(async (make: string, year?: string) => {
     if (!make) { setModels([]); return; }
     setLoadingModels(true);
     try {
-      const res = await fetch(`/api/cars/models?make=${encodeURIComponent(make)}`);
+      const params = new URLSearchParams({ make });
+      if (year) params.set('year', year);
+      const res = await fetch(`/api/cars/models?${params}`);
       const data = await res.json() as string[];
       setModels(Array.isArray(data) ? data : []);
     } catch {
@@ -314,6 +320,57 @@ export default function AutoBewertenPage() {
       setLoadingModels(false);
     }
   }, []);
+
+  async function fetchVIN() {
+    const vin = vinInput.trim().toUpperCase().replace(/\s/g, '');
+    if (vin.length < 11) {
+      setVinResult({ label: 'VIN muss mindestens 11 Zeichen haben', type: 'error' });
+      return;
+    }
+    setVinLoading(true);
+    setVinResult(null);
+    try {
+      const res = await fetch(`/api/cars/vin?vin=${encodeURIComponent(vin)}`);
+      const data = await res.json() as {
+        make?: string; model?: string; year?: string; fuel?: string;
+        transmission?: string; bodyClass?: string; engineCylinders?: string;
+        engineDisplacementL?: string; driveType?: string; partial?: boolean; error?: string;
+      };
+      if (!res.ok) {
+        setVinResult({ label: data.error || 'VIN nicht erkannt', type: 'error' });
+        return;
+      }
+      // auto-fill
+      if (data.make) set('make', data.make);
+      if (data.year) set('year', data.year);
+      if (data.fuel) set('fuel', data.fuel);
+      if (data.transmission) set('transmission', data.transmission);
+      if (data.make) fetchModels(data.make, data.year);
+      // model: set after fetchModels has time to load
+      if (data.model) setTimeout(() => set('model', data.model!), 600);
+
+      const label = [data.make, data.model, data.year].filter(Boolean).join(' ');
+      const fuel_label: Record<string, string> = { benzin: 'Benzin', diesel: 'Diesel', elektro: 'Elektro', hybrid: 'Hybrid', lpg: 'LPG' };
+      const fuelStr = data.fuel ? (fuel_label[data.fuel] || '') : '';
+      const transStr = data.transmission === 'auto' ? 'Automatik' : data.transmission === 'manual' ? 'Schaltgetriebe' : '';
+      const specs = [
+        data.engineDisplacementL ? `${data.engineDisplacementL}L` : '',
+        data.engineCylinders ? `${data.engineCylinders} Zyl.` : '',
+        data.bodyClass || '',
+        data.driveType || '',
+      ].filter(Boolean).join(' · ');
+
+      setVinResult({
+        label: `${label}${fuelStr ? ' · ' + fuelStr : ''}${transStr ? ' · ' + transStr : ''}`,
+        type: data.partial || !data.model ? 'partial' : 'success',
+        specs: specs || undefined,
+      });
+    } catch {
+      setVinResult({ label: 'Verbindungsfehler', type: 'error' });
+    } finally {
+      setVinLoading(false);
+    }
+  }
 
   function validateStep1(): boolean {
     const e: Record<string, string> = {};
@@ -450,13 +507,77 @@ export default function AutoBewertenPage() {
                   <p className="text-foreground-muted text-sm">Erzähl uns von deinem Auto.</p>
                 </div>
 
+                {/* VIN Auto-Fill */}
+                <div className="rounded-xl border border-border overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => { setVinOpen(v => !v); setVinResult(null); }}
+                    className="w-full flex items-center justify-between px-4 py-3 bg-muted/50 hover:bg-muted text-sm font-medium text-foreground transition-colors"
+                  >
+                    <span className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/><path strokeLinecap="round" d="M7 11V7a5 5 0 0110 0v4"/>
+                      </svg>
+                      VIN-Nummer bekannt? Fahrzeugdaten automatisch befüllen
+                    </span>
+                    <svg className={`w-4 h-4 text-foreground-muted transition-transform ${vinOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                  </button>
+
+                  {vinOpen && (
+                    <div className="p-4 space-y-3 border-t border-border bg-background">
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="z.B. WBA3A5C50DF595962"
+                          maxLength={17}
+                          value={vinInput}
+                          onChange={e => setVinInput(e.target.value.toUpperCase())}
+                          onKeyDown={e => e.key === 'Enter' && fetchVIN()}
+                          className="flex-1 h-10 rounded-md border border-input bg-background px-3 py-1 text-sm font-mono shadow-sm focus:outline-none focus:ring-2 focus:ring-ring uppercase tracking-widest"
+                        />
+                        <button
+                          type="button"
+                          onClick={fetchVIN}
+                          disabled={vinLoading || vinInput.length < 11}
+                          className="px-4 h-10 rounded-md bg-primary hover:bg-primary-dark text-white text-sm font-semibold disabled:opacity-50 flex items-center gap-2 transition-colors"
+                        >
+                          {vinLoading ? (
+                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                          ) : 'Dekodieren'}
+                        </button>
+                      </div>
+                      <p className="text-xs text-foreground-muted">Die VIN (Fahrzeug-Identifizierungsnummer) findest du im Fahrzeugschein (Feld E) oder auf der Windschutzscheibe.</p>
+
+                      {vinResult && (
+                        <div className={`flex items-start gap-2 p-3 rounded-lg text-sm ${
+                          vinResult.type === 'success' ? 'bg-green-50 border border-green-200' :
+                          vinResult.type === 'partial' ? 'bg-amber/10 border border-amber/30' :
+                          'bg-red-50 border border-red-200'
+                        }`}>
+                          <span className="mt-0.5 flex-shrink-0">
+                            {vinResult.type === 'success' ? '✓' : vinResult.type === 'partial' ? '⚠' : '✗'}
+                          </span>
+                          <div>
+                            <div className={`font-medium ${
+                              vinResult.type === 'success' ? 'text-green-700' :
+                              vinResult.type === 'partial' ? 'text-amber-700' :
+                              'text-red-700'
+                            }`}>{vinResult.label}</div>
+                            {vinResult.specs && <div className="text-xs text-foreground-muted mt-0.5">{vinResult.specs}</div>}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <Label htmlFor="make">Marke *</Label>
                     <select
                       id="make"
                       value={form.make}
-                      onChange={(e) => { set("make", e.target.value); set("model", ""); fetchModels(e.target.value); }}
+                      onChange={(e) => { set("make", e.target.value); set("model", ""); fetchModels(e.target.value, form.year); }}
                       className="w-full h-10 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="">Marke wählen</option>
@@ -486,7 +607,7 @@ export default function AutoBewertenPage() {
                   <select
                     id="year"
                     value={form.year}
-                    onChange={(e) => set("year", e.target.value)}
+                    onChange={(e) => { set("year", e.target.value); if (form.make) fetchModels(form.make, e.target.value); }}
                     className="w-full h-10 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">Jahr wählen</option>
