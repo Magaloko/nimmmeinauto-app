@@ -68,6 +68,7 @@ export async function notifyNewListing(data: {
   email: string;
   postal_code: string;
   listingId: string;
+  photo_urls?: string[];
 }) {
   const value = `€ ${(data.estimated_value_cents / 100).toLocaleString("de-AT")}`;
   const km = data.mileage.toLocaleString("de-AT");

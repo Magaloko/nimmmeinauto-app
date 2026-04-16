@@ -124,6 +124,7 @@ export function newListingEmail(data: {
   email: string;
   postal_code: string;
   listingId: string;
+  photo_urls?: string[];
 }): string {
   const value = `€ ${(data.estimated_value_cents / 100).toLocaleString("de-AT")}`;
   const km = data.mileage.toLocaleString("de-AT");
@@ -165,6 +166,37 @@ export function newListingEmail(data: {
       ${dataRow("E-Mail", `<a href="mailto:${data.email}" style="color:#1c1917;text-decoration:none;">${data.email}</a>`)}
       ${dataRow("PLZ", data.postal_code)}
     </table>
+
+    ${data.photo_urls && data.photo_urls.length > 0 ? `
+    <!-- Fotos -->
+    <p style="margin:24px 0 8px 0;font-size:11px;font-weight:700;color:#a8a29e;letter-spacing:2px;text-transform:uppercase;">Fotos (${data.photo_urls.length})</p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:8px;">
+      <tr>
+        ${data.photo_urls.slice(0, 3).map((url) => `
+        <td width="33%" style="padding-right:8px;vertical-align:top;">
+          <a href="${url}" style="display:block;">
+            <img src="${url}" alt="Fahrzeugfoto" width="160" style="width:100%;max-width:160px;height:110px;object-fit:cover;border-radius:8px;display:block;border:1px solid #e7e5e4;" />
+          </a>
+        </td>`).join("")}
+      </tr>
+    </table>
+    ${data.photo_urls.length > 3 ? `
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:8px;margin-bottom:8px;">
+      <tr>
+        ${data.photo_urls.slice(3, 6).map((url) => `
+        <td width="33%" style="padding-right:8px;vertical-align:top;">
+          <a href="${url}" style="display:block;">
+            <img src="${url}" alt="Fahrzeugfoto" width="160" style="width:100%;max-width:160px;height:110px;object-fit:cover;border-radius:8px;display:block;border:1px solid #e7e5e4;" />
+          </a>
+        </td>`).join("")}
+      </tr>
+    </table>` : ""}
+    ${data.photo_urls.length > 6 ? `<p style="margin:4px 0 0 0;font-size:12px;color:#a8a29e;">+ ${data.photo_urls.length - 6} weitere Fotos im Inserat</p>` : ""}
+    ` : `
+    <!-- Keine Fotos -->
+    <p style="margin:24px 0 8px 0;font-size:11px;font-weight:700;color:#a8a29e;letter-spacing:2px;text-transform:uppercase;">Fotos</p>
+    <p style="margin:0 0 16px 0;font-size:13px;color:#a8a29e;font-style:italic;">Keine Fotos hochgeladen</p>
+    `}
 
     ${ctaButton(link, "Inserat öffnen")}
   `;
