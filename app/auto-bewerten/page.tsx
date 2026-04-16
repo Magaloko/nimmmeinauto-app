@@ -420,7 +420,8 @@ export default function AutoBewertenPage() {
 
   function validateStep2(): boolean {
     const e: Record<string, string> = {};
-    if (!form.mileage || isNaN(Number(form.mileage))) e.mileage = "Bitte gültigen Kilometerstand eingeben";
+    const km = Number(form.mileage);
+    if (!form.mileage || isNaN(km) || km < 0 || km > 999999) e.mileage = "Bitte gültigen Kilometerstand eingeben (0–999.999 km)";
     if (!form.condition) e.condition = "Bitte Fahrzeugzustand wählen";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -430,8 +431,8 @@ export default function AutoBewertenPage() {
     const e: Record<string, string> = {};
     if (!form.firstName.trim()) e.firstName = "Pflichtfeld";
     if (!form.lastName.trim()) e.lastName = "Pflichtfeld";
-    if (!form.phone.trim()) e.phone = "Pflichtfeld";
-    if (!form.email.includes("@")) e.email = "Gültige E-Mail erforderlich";
+    if (!/^[\d\s\+\-\(\)]{7,}$/.test(form.phone.trim())) e.phone = "Gültige Telefonnummer erforderlich";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Gültige E-Mail erforderlich";
     if (!/^\d{4}$/.test(form.plz)) e.plz = "4-stellige PLZ erforderlich";
     if (!form.agb) e.agb = "Bitte AGB zustimmen";
     setErrors(e);
@@ -478,6 +479,8 @@ export default function AutoBewertenPage() {
         estimated_value_cents,
       });
     } catch (err) {
+      // Next.js redirect() throws internally — let it propagate
+      if ((err as { digest?: string })?.digest?.startsWith("NEXT_REDIRECT")) throw err;
       setSubmitError("Fehler beim Speichern. Bitte erneut versuchen.");
       setIsSubmitting(false);
     }
