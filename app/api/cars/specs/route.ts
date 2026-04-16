@@ -3,14 +3,14 @@ import { NextRequest, NextResponse } from 'next/server';
 export const revalidate = 86400; // cache 24h
 
 interface NinjasCar {
-  city_mpg: number;
+  city_mpg: number | string;
   class: string;
-  combination_mpg: number;
+  combination_mpg: number | string;
   cylinders: number;
   displacement: number;
   drive: string;
   fuel_type: string;
-  highway_mpg: number;
+  highway_mpg: number | string;
   make: string;
   model: string;
   transmission: string;
@@ -32,10 +32,11 @@ export interface CarSpecs {
   year: number;
 }
 
-// MPG → L/100km
-function mpgToL100(mpg: number): string {
-  if (!mpg || mpg <= 0) return '';
-  return (235.214 / mpg).toFixed(1);
+// MPG → L/100km (API Ninjas returns strings for premium fields)
+function mpgToL100(mpg: number | string): string {
+  const v = Number(mpg);
+  if (!v || isNaN(v) || v <= 0) return '';
+  return (235.214 / v).toFixed(1);
 }
 
 const DRIVE_LABELS: Record<string, string> = {
@@ -79,10 +80,11 @@ export async function GET(req: NextRequest) {
   if (!make || !model) return NextResponse.json(null);
 
   try {
+    // Strip common suffixes so "330i" matches "330i xdrive", etc.
+    const modelBase = model.toLowerCase().split(' ')[0];
     const params = new URLSearchParams({
       make: make.toLowerCase().replace(/-/g, ' '), // "mercedes-benz" → "mercedes benz"
-      model: model.toLowerCase(),
-      limit: '5',
+      model: modelBase,
     });
     if (year) params.set('year', year);
 
