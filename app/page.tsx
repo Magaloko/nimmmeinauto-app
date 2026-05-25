@@ -253,11 +253,6 @@ export default async function HomePage() {
               <div className="flex flex-col sm:flex-row gap-3 mb-8">
                 <Link href="/auto-bewerten">
                   <Button size="lg" className="bg-amber hover:bg-amber-dark text-foreground font-bold shadow-warm text-base px-8 h-12 w-full sm:w-auto">
-                    Auto jetzt bewerten
-                  </Button>
-                </Link>
-                <Link href="/auto-bewerten">
-                  <Button size="lg" variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 font-semibold text-base px-8 h-12 w-full sm:w-auto">
                     Kostenloses Angebot erhalten
                   </Button>
                 </Link>
