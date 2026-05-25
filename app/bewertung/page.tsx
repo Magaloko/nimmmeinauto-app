@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from "@/components/ui";
 import { Navbar } from "../../components/navbar";
-import { supabase, type Listing, type Offer } from "@/lib/supabase";
+import { supabase, type Listing } from "@/lib/supabase";
 
 const conditionLabels: Record<string, string> = {
   EXCELLENT: "Sehr gut",
@@ -26,21 +26,12 @@ function formatEur(cents: number): string {
   return (cents / 100).toLocaleString("de-AT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 }
 
-const DEALER_BADGES = [
-  { badge: "Schnellste Abwicklung", badgeColor: "bg-green-100 text-green-700" },
-  { badge: "Sichere Auszahlung", badgeColor: "bg-blue-100 text-blue-700" },
-  { badge: "Inklusive Abholung", badgeColor: "bg-purple-100 text-purple-700" },
-];
-
 function BewertungContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const [listing, setListing] = useState<Listing | null>(null);
-  const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showOffers, setShowOffers] = useState(false);
   const [confettiActive, setConfettiActive] = useState(false);
-  const [acceptedOffer, setAcceptedOffer] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) {
@@ -60,52 +51,6 @@ function BewertungContent() {
 
       setListing(data);
       setLoading(false);
-
-      setTimeout(async () => {
-        const { data: realOffers } = await supabase
-          .from("offers")
-          .select("*")
-          .eq("listing_id", id);
-
-        if (realOffers && realOffers.length > 0) {
-          setOffers(realOffers);
-        } else {
-          const base = data?.estimated_value_cents ?? 2000000;
-          setOffers([
-            {
-              id: "m1",
-              created_at: new Date().toISOString(),
-              listing_id: id!,
-              dealer_name: "Autohaus Müller Wien",
-              dealer_email: null,
-              amount_cents: Math.round(base * 0.92),
-              message: "Sofortige Abholung möglich",
-              status: "PENDING",
-            },
-            {
-              id: "m2",
-              created_at: new Date().toISOString(),
-              listing_id: id!,
-              dealer_name: "Fahrzeugcenter Graz GmbH",
-              dealer_email: null,
-              amount_cents: Math.round(base * 0.88),
-              message: "Besichtigung in 2 Tagen",
-              status: "PENDING",
-            },
-            {
-              id: "m3",
-              created_at: new Date().toISOString(),
-              listing_id: id!,
-              dealer_name: "AutoGroup Salzburg",
-              dealer_email: null,
-              amount_cents: Math.round(base * 0.85),
-              message: "Barzahlung",
-              status: "PENDING",
-            },
-          ]);
-        }
-        setShowOffers(true);
-      }, 2000);
     }
 
     load();
@@ -115,8 +60,8 @@ function BewertungContent() {
   if (!id) {
     return (
       <div className="p-8 text-center">
-        Keine Inserat-ID gefunden.{" "}
-        <a href="/auto-bewerten" className="text-primary underline">Neu bewerten</a>
+        Keine Anfrage-ID gefunden.{" "}
+        <a href="/auto-bewerten" className="text-primary underline">Neu starten</a>
       </div>
     );
   }
@@ -128,7 +73,7 @@ function BewertungContent() {
           <div className="flex justify-center mb-4">
               <svg className="w-10 h-10 text-primary animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
             </div>
-          <p>Lade Bewertung...</p>
+          <p>Lade deine Anfrage...</p>
         </div>
       </div>
     );
@@ -137,8 +82,8 @@ function BewertungContent() {
   if (!listing) {
     return (
       <div className="p-8 text-center">
-        Inserat nicht gefunden.{" "}
-        <a href="/auto-bewerten" className="text-primary underline">Neu bewerten</a>
+        Anfrage nicht gefunden.{" "}
+        <a href="/auto-bewerten" className="text-primary underline">Neue Bewertung starten</a>
       </div>
     );
   }
@@ -184,26 +129,32 @@ function BewertungContent() {
       )}
 
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
-        {/* Main valuation card */}
+        {/* Confirmation hero */}
         <Card className="border-2 border-amber/30 shadow-warm">
           <CardHeader className="text-center pb-2 bg-gradient-to-br from-amber/10 to-primary/10 rounded-t-xl">
-            <div className="flex justify-center mb-2">
-              <svg className="w-12 h-12 text-amber" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+            <div className="flex justify-center mb-3">
+              <div className="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
             </div>
-            <CardTitle className="text-2xl text-foreground">Geschätzter Marktwert</CardTitle>
-            <p className="text-foreground-muted text-sm mt-1">Basierend auf aktuellen Marktdaten in Österreich</p>
+            <CardTitle className="text-2xl md:text-3xl text-foreground">
+              Deine Anfrage ist bei uns
+            </CardTitle>
+            <p className="text-foreground-muted mt-2 max-w-md mx-auto">
+              Unser Team prüft dein Fahrzeug und meldet sich
+              <strong className="text-foreground"> innerhalb von 24 Stunden</strong> mit deinem
+              persönlichen Festpreis-Angebot per E-Mail und Telefon.
+            </p>
           </CardHeader>
-          <CardContent className="text-center pt-6 pb-8">
-            <div className="text-6xl font-bold text-amber-dark mb-2">
-              {formatEur(value)}
-            </div>
-            <p className="text-foreground-muted text-sm mb-1">Erwartete Preisspanne:</p>
-            <div className="text-xl font-semibold text-foreground mb-6">
-              {formatEur(low)} – {formatEur(high)}
-            </div>
 
-            {/* Car summary */}
-            <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto mb-6">
+          <CardContent className="pt-6 pb-8">
+            {/* Vehicle summary */}
+            <div className="text-xs font-semibold text-foreground-muted uppercase tracking-wider mb-3 text-center">
+              Deine Anfrage
+            </div>
+            <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto mb-4">
               <div className="bg-muted rounded-xl p-3 text-center">
                 <div className="flex justify-center mb-1">
                   <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 17H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1l3-4h8l3 4h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-5"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
@@ -227,7 +178,7 @@ function BewertungContent() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2 justify-center">
+            <div className="flex flex-wrap gap-2 justify-center mb-6">
               <Badge className="bg-blue-100 text-blue-700 border-0">{fuelLabels[listing.fuel] ?? listing.fuel}</Badge>
               <Badge className="bg-muted text-foreground-muted border-0">
                 {listing.transmission === "auto" ? "Automatik" : "Schaltgetriebe"}
@@ -235,6 +186,59 @@ function BewertungContent() {
               {listing.has_accident_history && <Badge className="bg-red-100 text-red-700 border-0">Unfallfahrzeug</Badge>}
               <Badge className="bg-green-100 text-green-700 border-0">PLZ {listing.postal_code}</Badge>
             </div>
+
+            {/* Online orientation range — small and clearly non-binding */}
+            {value > 0 && (
+              <div className="rounded-xl bg-stone-50 border border-stone-200 p-4 text-center">
+                <div className="text-xs font-semibold text-foreground-muted uppercase tracking-wider mb-1">
+                  Unverbindliche Online-Orientierung
+                </div>
+                <div className="text-lg font-semibold text-foreground">
+                  {formatEur(low)} – {formatEur(high)}
+                </div>
+                <p className="text-xs text-foreground-muted mt-2 max-w-md mx-auto leading-relaxed">
+                  Grobe Spanne auf Basis deiner Online-Angaben. Dein verbindliches
+                  Festpreis-Angebot erhältst du nach Prüfung durch unser Team.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* What happens next */}
+        <Card className="shadow-card">
+          <CardContent className="p-6 md:p-8">
+            <h3 className="font-semibold text-lg text-foreground mb-5">So geht es weiter</h3>
+            <ol className="space-y-5">
+              {[
+                {
+                  title: "Wir prüfen deine Angaben",
+                  desc: "Unser Team sichtet Fahrzeugdaten und Fotos und gleicht sie mit aktuellen Marktpreisen ab.",
+                },
+                {
+                  title: "Dein Festpreis-Angebot kommt binnen 24 h",
+                  desc: "Du bekommst per E-Mail und Telefon unser persönliches, verbindliches Kaufpreis-Angebot.",
+                },
+                {
+                  title: "Termin zur Prüfung",
+                  desc: "Wir vereinbaren einen kurzen Vor-Ort-Termin – bei dir zu Hause oder an einem unserer Standorte.",
+                },
+                {
+                  title: "Übergabe & Auszahlung",
+                  desc: "Bei Übergabe unterschreibt ihr den Kaufvertrag, wir überweisen den Kaufpreis sofort per Banküberweisung.",
+                },
+              ].map((step, i) => (
+                <li key={step.title} className="flex gap-4">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber text-foreground font-bold text-sm flex items-center justify-center">
+                    {i + 1}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-foreground text-sm md:text-base">{step.title}</div>
+                    <div className="text-foreground-muted text-sm mt-0.5">{step.desc}</div>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </CardContent>
         </Card>
 
@@ -243,7 +247,7 @@ function BewertungContent() {
           <Card className="shadow-card">
             <CardContent className="p-6">
               <h3 className="font-semibold text-lg text-foreground mb-4">
-                Fahrzeugfotos ({listing.photo_urls.length})
+                Deine Fahrzeugfotos ({listing.photo_urls.length})
               </h3>
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                 {listing.photo_urls.map((url, i) => (
@@ -268,123 +272,51 @@ function BewertungContent() {
           </Card>
         )}
 
-        {/* Dealer loading / offers */}
-        <Card className="shadow-card">
-          <CardContent className="p-6">
-            {!showOffers ? (
-              <div className="text-center py-8">
-                <div className="flex justify-center mb-4">
-                  <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z"/></svg>
-                </div>
-                <p className="font-semibold text-lg mb-2 text-foreground">Wir bereiten dein Festpreis-Angebot vor</p>
-                <div className="flex justify-center gap-1 mt-3">
-                  <style>{`
-                    @keyframes bounce-dot {
-                      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-                      40% { transform: scale(1); opacity: 1; }
-                    }
-                    .dot { animation: bounce-dot 1.2s infinite ease-in-out; }
-                    .dot:nth-child(2) { animation-delay: 0.2s; }
-                    .dot:nth-child(3) { animation-delay: 0.4s; }
-                  `}</style>
-                  {[0, 1, 2].map((i) => (
-                    <div key={i} className="dot w-3 h-3 bg-primary rounded-full" />
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div>
-                <div className="flex items-center gap-2 mb-5">
-                  <div className="w-2 h-2 bg-green-500 rounded-full" />
-                  <h3 className="font-semibold text-lg text-foreground">{offers.length === 1 ? "Dein NimmMeinAuto Festpreis-Angebot" : `${offers.length} Ankaufs-Optionen für dein Fahrzeug`}</h3>
-                  <Badge className="bg-green-100 text-green-700 border-0 ml-auto">Neu</Badge>
-                </div>
-                <div className="space-y-4">
-                  {offers.map((offer, idx) => {
-                    const accepted = acceptedOffer === offer.id;
-                    const dealerMeta = DEALER_BADGES[idx % DEALER_BADGES.length];
-                    const isBest = idx === 0;
-                    return (
-                      <div
-                        key={offer.id}
-                        className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
-                          accepted
-                            ? "border-amber/40 bg-amber/5"
-                            : isBest
-                            ? "border-amber/30 ring-2 ring-amber/30 bg-amber/5"
-                            : "border-border hover:border-primary/30"
-                        }`}
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            {isBest && !accepted && (
-                              <span className="text-xs px-2 py-0.5 rounded-full font-semibold bg-amber/20 text-amber-dark">
-                                ⭐ Bestes Angebot
-                              </span>
-                            )}
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center">
-                                {offer.dealer_name[0]}
-                              </div>
-                              <span className="font-semibold text-sm text-foreground">{offer.dealer_name}</span>
-                            </div>
-                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${dealerMeta.badgeColor}`}>
-                              {dealerMeta.badge}
-                            </span>
-                          </div>
-                          {offer.message && <p className="text-xs text-foreground-muted ml-10">{offer.message}</p>}
-                          <div className="flex items-center gap-2 mt-1 ml-10">
-                            <div className="text-amber text-xs">{"★".repeat(Math.max(3, 5 - idx))}</div>
-                            <span className="text-xs text-foreground-muted">{Math.max(3, 5 - idx)}.0 Bewertung</span>
-                          </div>
-                        </div>
-                        <div className="text-right ml-4">
-                          <div className="text-xl font-bold text-amber-dark">{formatEur(offer.amount_cents)}</div>
-                          <div className="text-xs text-foreground-muted mb-2">
-                            {Math.round((offer.amount_cents / value) * 100)}% des Schätzwerts
-                          </div>
-                          {accepted ? (
-                            <div className="flex items-center gap-1 text-amber-dark text-xs font-semibold">
-                              <span>✓</span> Angenommen
-                            </div>
-                          ) : (
-                            <Button
-                              size="sm"
-                              className="bg-primary hover:bg-primary-dark text-white font-semibold"
-                              onClick={() => {
-                                setAcceptedOffer(offer.id);
-                                alert(`Glückwunsch! ${offer.dealer_name} kontaktiert Sie in Kürze.`);
-                              }}
-                            >
-                              Angebot annehmen
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+        {/* Contact box */}
+        <Card className="shadow-card bg-[#1C1917] text-white border-0">
+          <CardContent className="p-6 md:p-8">
+            <h3 className="font-semibold text-lg mb-2">Rückfragen?</h3>
+            <p className="text-stone-300 text-sm mb-4">
+              Falls du etwas zu deiner Anfrage ergänzen oder eine Frage hast, erreichst du uns direkt:
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a
+                href="mailto:nimmmeinauto@gmail.com"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/15 rounded-lg text-sm font-medium transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                nimmmeinauto@gmail.com
+              </a>
+              <a
+                href="https://t.me/nimmMeinAuto_Bot"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2AABEE] hover:bg-[#1d96d6] rounded-lg text-sm font-medium transition-colors"
+              >
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                Telegram-Bot
+              </a>
+            </div>
           </CardContent>
         </Card>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link href="/auto-bewerten">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+          <Link href="/">
             <Button variant="outline" className="w-full sm:w-auto">
-              ← Neue Bewertung
+              ← Zur Startseite
             </Button>
           </Link>
-          <Link href="/seller">
+          <Link href="/auto-bewerten">
             <Button variant="outline" className="w-full sm:w-auto">
-              Meine Inserate →
+              Weiteres Fahrzeug bewerten
             </Button>
           </Link>
         </div>
 
         <p className="text-center text-xs text-foreground-muted">
-          Die Bewertung ist ein Schätzwert basierend auf aktuellen Marktdaten und ersetzt kein professionelles Gutachten.
+          Die unverbindliche Online-Orientierung basiert auf deinen Angaben. Verbindlich
+          ist ausschließlich das Festpreis-Angebot, das du nach Prüfung durch unser Team erhältst.
         </p>
       </div>
     </div>

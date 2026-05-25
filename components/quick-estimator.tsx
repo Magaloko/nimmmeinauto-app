@@ -81,8 +81,13 @@ export function QuickEstimator() {
 
   return (
     <div className="bg-[#292524]/80 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-2xl ring-1 ring-amber/10 w-full max-w-sm">
-      <div className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-4">
-        Sofort-Schätzer
+      <div className="mb-4">
+        <div className="text-xs font-semibold text-stone-400 uppercase tracking-wider">
+          Sofort-Schätzer
+        </div>
+        <div className="text-[10px] text-stone-500 mt-0.5">
+          Unverbindliche Spanne · Festpreis kommt vom Team in 24 h
+        </div>
       </div>
 
       <div className="space-y-3 mb-4">
@@ -169,16 +174,17 @@ export function QuickEstimator() {
             <div className="text-stone-400 text-xs mb-0.5">
               {brand?.name} · {year} · {km.toLocaleString("de-AT")} km · {condition}
             </div>
-            <div className="text-xs text-stone-500 mb-2">Geschätzter Marktwert</div>
-            <div className="text-3xl font-bold text-amber">
-              € {fmt(estimate.mid)}
+            <div className="text-xs text-stone-500 mb-2">Grobe Online-Spanne</div>
+            <div className="text-2xl font-bold text-amber">
+              € {fmt(estimate.low)} – € {fmt(estimate.high)}
             </div>
             <div className="text-stone-400 text-xs mt-1">
-              Spanne: € {fmt(estimate.low)} – € {fmt(estimate.high)}
+              (Mittelwert: € {fmt(estimate.mid)})
             </div>
           </div>
-          <p className="text-xs text-stone-500 mb-3 text-center">
-            Orientierungswert · Exaktes Angebot nach vollständiger Bewertung
+          <p className="text-xs text-stone-500 mb-3 text-center leading-relaxed">
+            Nur eine Orientierung auf Basis weniger Eckdaten. Dein verbindliches
+            Festpreis-Angebot bekommst du innerhalb von 24 h nach Prüfung durch unser Team.
           </p>
           <Link
             href={`/auto-bewerten?${params.toString()}`}
