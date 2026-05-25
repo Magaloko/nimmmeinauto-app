@@ -6,7 +6,7 @@
 //   NOTIFY_EMAIL         — nimmmeinauto@gmail.com
 
 import nodemailer from "nodemailer";
-import { newListingEmail, newOfferEmail, newMessageEmail } from "./email-templates";
+import { newListingEmail, newOfferEmail, newMessageEmail, customerConfirmationEmail } from "./email-templates";
 
 const TELEGRAM_API = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}`;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID ?? "544821565";
@@ -49,6 +49,25 @@ export async function sendEmail(subject: string, html: string): Promise<void> {
     });
   } catch (err) {
     console.error("[notify] Gmail error:", err);
+  }
+}
+
+/** Send to an arbitrary recipient (e.g. the customer). */
+export async function sendEmailTo(
+  to: string,
+  subject: string,
+  html: string
+): Promise<void> {
+  if (!process.env.GMAIL_APP_PASSWORD) return;
+  try {
+    await getMailer().sendMail({
+      from: `"NimmMeinAuto" <${NOTIFY_EMAIL}>`,
+      to,
+      subject,
+      html,
+    });
+  } catch (err) {
+    console.error("[notify] Gmail error (to customer):", err);
   }
 }
 
@@ -125,6 +144,23 @@ export async function notifyNewOffer(data: {
       newOfferEmail(data)
     ),
   ]);
+}
+
+export async function notifyCustomer(data: {
+  email: string;
+  first_name: string;
+  make: string;
+  model: string;
+  year: number;
+  mileage: number;
+  estimated_value_cents: number;
+  listingId: string;
+}) {
+  await sendEmailTo(
+    data.email,
+    `✓ Deine Anfrage ist bei uns – ${data.make} ${data.model}`,
+    customerConfirmationEmail(data)
+  );
 }
 
 export async function notifyNewMessage(data: {

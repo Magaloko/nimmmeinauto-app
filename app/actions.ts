@@ -3,7 +3,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/supabase-server";
-import { notifyNewListing, notifyNewOffer } from "@/lib/notify";
+import { notifyNewListing, notifyNewOffer, notifyCustomer } from "@/lib/notify";
 
 function getServiceClient() {
   return createClient(
@@ -44,6 +44,18 @@ export async function submitListing(data: {
 
   // Fire-and-forget: don't block the redirect on notification delivery.
   notifyNewListing({ ...data, listingId: listing.id }).catch(console.error);
+
+  // Confirm receipt to the customer.
+  notifyCustomer({
+    email: data.email,
+    first_name: data.first_name,
+    make: data.make,
+    model: data.model,
+    year: data.year,
+    mileage: data.mileage,
+    estimated_value_cents: data.estimated_value_cents,
+    listingId: listing.id,
+  }).catch(console.error);
 
   redirect(`/bewertung?id=${listing.id}`);
 }

@@ -263,7 +263,150 @@ export function newOfferEmail(data: {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Template 3: Neue Kundennachricht
+// Template 3: Kunden-Eingangsbestätigung (geht an den Verkäufer)
+// ─────────────────────────────────────────────────────────────────────────────
+export function customerConfirmationEmail(data: {
+  first_name: string;
+  make: string;
+  model: string;
+  year: number;
+  mileage: number;
+  estimated_value_cents: number;
+  listingId: string;
+}): string {
+  const km = data.mileage.toLocaleString("de-AT");
+  const low = Math.round((data.estimated_value_cents * 0.91) / 100) * 100;
+  const high = Math.round((data.estimated_value_cents * 1.09) / 100) * 100;
+  const fmtLow = `€ ${(low / 100).toLocaleString("de-AT")}`;
+  const fmtHigh = `€ ${(high / 100).toLocaleString("de-AT")}`;
+  const bewertungLink = `${BASE_URL}/bewertung?id=${data.listingId}`;
+
+  const content = `
+    <!-- Greeting -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+      <tr>
+        <td>
+          ${badge("#16a34a", "✓ Anfrage erhalten")}
+          <h1 style="margin:16px 0 8px 0;font-size:24px;font-weight:900;color:#1c1917;line-height:1.2;">
+            Hallo ${data.first_name},<br/>deine Anfrage ist bei uns!
+          </h1>
+          <p style="margin:0;font-size:15px;color:#57534e;line-height:1.6;">
+            Wir haben deine Anfrage für deinen <strong>${data.make} ${data.model}</strong> erhalten
+            und melden uns <strong>innerhalb von 24 Stunden</strong> mit deinem persönlichen Festpreis-Angebot.
+          </p>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Divider -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+      <tr><td style="height:1px;background-color:#f5f5f4;font-size:0;line-height:0;">&nbsp;</td></tr>
+    </table>
+
+    <!-- Fahrzeugdaten -->
+    <p style="margin:0 0 8px 0;font-size:11px;font-weight:700;color:#a8a29e;letter-spacing:2px;text-transform:uppercase;">Dein Fahrzeug</p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+      ${dataRow("Marke / Modell", `${data.make} ${data.model}`)}
+      ${dataRow("Baujahr", String(data.year))}
+      ${dataRow("Kilometerstand", `${km} km`)}
+    </table>
+
+    <!-- Estimated range (soft, non-binding) -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+      <tr>
+        <td style="background-color:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:18px 20px;">
+          <p style="margin:0 0 4px 0;font-size:11px;font-weight:700;color:#92400e;letter-spacing:2px;text-transform:uppercase;">Unverbindliche Online-Orientierung</p>
+          <p style="margin:0;font-size:22px;font-weight:900;color:#1c1917;">${fmtLow} – ${fmtHigh}</p>
+          <p style="margin:6px 0 0 0;font-size:12px;color:#78716c;line-height:1.5;">
+            Diese Spanne basiert auf wenigen Eckdaten und ist <em>nicht verbindlich</em>.
+            Dein Festpreis-Angebot folgt nach persönlicher Prüfung durch unser Team.
+          </p>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Was passiert als Nächstes -->
+    <p style="margin:0 0 12px 0;font-size:11px;font-weight:700;color:#a8a29e;letter-spacing:2px;text-transform:uppercase;">So geht es weiter</p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+      <tr>
+        <td style="padding:0 0 14px 0;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td width="36" style="vertical-align:top;padding-top:2px;">
+                <div style="width:28px;height:28px;background-color:#f59e0b;border-radius:50%;text-align:center;line-height:28px;font-size:13px;font-weight:900;color:#1c1917;">1</div>
+              </td>
+              <td style="vertical-align:top;padding-left:4px;">
+                <p style="margin:0;font-size:14px;font-weight:700;color:#1c1917;">Prüfung deiner Anfrage</p>
+                <p style="margin:2px 0 0 0;font-size:13px;color:#78716c;">Unser Team sichtet deine Angaben und Fotos.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0 0 14px 0;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td width="36" style="vertical-align:top;padding-top:2px;">
+                <div style="width:28px;height:28px;background-color:#f59e0b;border-radius:50%;text-align:center;line-height:28px;font-size:13px;font-weight:900;color:#1c1917;">2</div>
+              </td>
+              <td style="vertical-align:top;padding-left:4px;">
+                <p style="margin:0;font-size:14px;font-weight:700;color:#1c1917;">Festpreis-Angebot in 24 h</p>
+                <p style="margin:2px 0 0 0;font-size:13px;color:#78716c;">Du erhältst per E-Mail oder Telefon dein verbindliches Angebot.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0 0 14px 0;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td width="36" style="vertical-align:top;padding-top:2px;">
+                <div style="width:28px;height:28px;background-color:#f59e0b;border-radius:50%;text-align:center;line-height:28px;font-size:13px;font-weight:900;color:#1c1917;">3</div>
+              </td>
+              <td style="vertical-align:top;padding-left:4px;">
+                <p style="margin:0;font-size:14px;font-weight:700;color:#1c1917;">Termin zur Fahrzeugprüfung</p>
+                <p style="margin:2px 0 0 0;font-size:13px;color:#78716c;">Wir vereinbaren einen Termin, der dir passt.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td width="36" style="vertical-align:top;padding-top:2px;">
+                <div style="width:28px;height:28px;background-color:#f59e0b;border-radius:50%;text-align:center;line-height:28px;font-size:13px;font-weight:900;color:#1c1917;">4</div>
+              </td>
+              <td style="vertical-align:top;padding-left:4px;">
+                <p style="margin:0;font-size:14px;font-weight:700;color:#1c1917;">Übergabe &amp; Sofort-Auszahlung</p>
+                <p style="margin:2px 0 0 0;font-size:13px;color:#78716c;">Banküberweisung am Tag der Übergabe — sicher &amp; nachvollziehbar.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Contact hint -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:8px;">
+      <tr>
+        <td style="background-color:#f5f5f4;border-radius:8px;padding:16px 18px;font-size:13px;color:#57534e;line-height:1.6;">
+          Fragen? Schreib uns einfach: <a href="mailto:office@nimmmeinauto.at" style="color:#f59e0b;text-decoration:none;font-weight:700;">office@nimmmeinauto.at</a>
+        </td>
+      </tr>
+    </table>
+
+    ${ctaButton(bewertungLink, "Meine Anfrage ansehen")}
+  `;
+
+  return emailWrapper(content);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Template 4: Neue Kundennachricht (intern)
 // ─────────────────────────────────────────────────────────────────────────────
 export function newMessageEmail(data: {
   sender_name: string;
