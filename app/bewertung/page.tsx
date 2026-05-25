@@ -28,8 +28,8 @@ function formatEur(cents: number): string {
 
 const DEALER_BADGES = [
   { badge: "Schnellste Abwicklung", badgeColor: "bg-green-100 text-green-700" },
-  { badge: "Geprüfter Händler", badgeColor: "bg-blue-100 text-blue-700" },
-  { badge: "Barzahlung", badgeColor: "bg-purple-100 text-purple-700" },
+  { badge: "Sichere Auszahlung", badgeColor: "bg-blue-100 text-blue-700" },
+  { badge: "Inklusive Abholung", badgeColor: "bg-purple-100 text-purple-700" },
 ];
 
 function BewertungContent() {
@@ -276,7 +276,7 @@ function BewertungContent() {
                 <div className="flex justify-center mb-4">
                   <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z"/></svg>
                 </div>
-                <p className="font-semibold text-lg mb-2 text-foreground">3 Händler werden benachrichtigt</p>
+                <p className="font-semibold text-lg mb-2 text-foreground">Wir bereiten dein Festpreis-Angebot vor</p>
                 <div className="flex justify-center gap-1 mt-3">
                   <style>{`
                     @keyframes bounce-dot {
@@ -296,7 +296,7 @@ function BewertungContent() {
               <div>
                 <div className="flex items-center gap-2 mb-5">
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
-                  <h3 className="font-semibold text-lg text-foreground">{offers.length} Händlerangebote eingegangen</h3>
+                  <h3 className="font-semibold text-lg text-foreground">{offers.length === 1 ? "Dein NimmMeinAuto Festpreis-Angebot" : `${offers.length} Ankaufs-Optionen für dein Fahrzeug`}</h3>
                   <Badge className="bg-green-100 text-green-700 border-0 ml-auto">Neu</Badge>
                 </div>
                 <div className="space-y-4">

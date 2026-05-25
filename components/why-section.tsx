@@ -28,8 +28,8 @@ const STEPS = [
   },
   {
     num: 2,
-    title: "Sofortschätzung erhalten",
-    desc: "Unser System berechnet den aktuellen Marktwert deines Fahrzeugs.",
+    title: "Online-Bewertung erhalten",
+    desc: "Du bekommst sofort eine Preiseinschätzung auf Basis aktueller österreichischer Marktdaten.",
     icon: (
       <svg className="w-7 h-7 text-amber" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -38,8 +38,8 @@ const STEPS = [
   },
   {
     num: 3,
-    title: "Wir machen ein Angebot",
-    desc: "Unser Team prüft dein Inserat und schickt dir ein verbindliches Kaufangebot.",
+    title: "Termin zur Prüfung",
+    desc: "Wir prüfen dein Fahrzeug vor Ort oder an einem unserer Standorte und machen dir ein verbindliches Festpreis-Angebot.",
     icon: (
       <svg className="w-7 h-7 text-amber" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
@@ -48,8 +48,8 @@ const STEPS = [
   },
   {
     num: 4,
-    title: "Übergabe & Auszahlung",
-    desc: "Termin vereinbaren, Auto übergeben, Geld sofort erhalten. Fertig.",
+    title: "Verkaufen & Geld erhalten",
+    desc: "Angebot annehmen, Fahrzeug übergeben, Auszahlung noch am selben Tag. Fertig.",
     icon: (
       <svg className="w-7 h-7 text-amber" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -128,7 +128,7 @@ const FEATURES = [
   },
   {
     title: "Fairer Festpreis",
-    desc: "Unser Angebot basiert auf Echtzeit-Marktdaten – kein Feilschen, kein Stress.",
+    desc: "Unser Angebot basiert auf aktuellen Marktdaten – kein Feilschen, keine versteckten Gebühren.",
     colorClass: "bg-amber/20 text-amber-dark",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -138,7 +138,7 @@ const FEATURES = [
   },
   {
     title: "Schnell — Ø 24 h",
-    desc: "Unser Team meldet sich innerhalb eines Werktages mit einem Angebot.",
+    desc: "Unser Team meldet sich innerhalb eines Werktages mit deinem persönlichen Festpreis-Angebot.",
     colorClass: "bg-blue-50 text-blue-600",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -157,8 +157,8 @@ const FEATURES = [
     ),
   },
   {
-    title: "Direktankauf durch uns",
-    desc: "Wir kaufen dein Fahrzeug direkt – kein Zwischenhändler, keine Überraschungen.",
+    title: "Sichere Auszahlung",
+    desc: "Wir kaufen dein Fahrzeug direkt. Auszahlung per Banküberweisung am Tag der Übergabe – kein Bargeld-Risiko.",
     colorClass: "bg-stone-100 text-stone-600",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -168,7 +168,7 @@ const FEATURES = [
   },
   {
     title: "Österreichweit",
-    desc: "Fahrzeugabholung in allen 9 Bundesländern – wir kommen zu dir.",
+    desc: "Fahrzeug-Prüfung und Abholung in allen 9 Bundesländern – wir kommen zu dir.",
     colorClass: "bg-red-50 text-red-600",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -183,22 +183,22 @@ const FEATURES = [
 
 const COMPARISON_ROWS = [
   "Kostenlos für den Verkäufer",
+  "Keine Inserate & Besichtigungen",
   "Keine Verhandlungen",
-  "Faire Marktbewertung",
-  "Schnelle Auszahlung",
+  "Fairer Festpreis",
+  "Sofortige Auszahlung",
   "Kein Betrugsrisiko",
-  "Rundum-Service",
 ];
 
 type CellValue = true | false | "partial";
 
 const COMPARISON_DATA: [CellValue, CellValue, CellValue][] = [
-  [true, false, true],
-  [true, false, false],
-  [true, "partial", false],
-  [true, false, "partial"],
-  [true, false, true],
-  [true, false, false],
+  [true, false, true],     // Kostenlos für den Verkäufer
+  [true, false, true],     // Keine Inserate & Besichtigungen
+  [true, false, "partial"],// Keine Verhandlungen
+  [true, "partial", false],// Fairer Festpreis
+  [true, false, "partial"],// Sofortige Auszahlung
+  [true, false, true],     // Kein Betrugsrisiko
 ];
 
 function CheckIcon() {
@@ -277,10 +277,10 @@ export function WhySection({ stats: _stats }: WhySectionProps) {
               So funktioniert&apos;s
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-              Auto in 4 Schritten verkaufen – zum besten Preis
+              In 4 Schritten dein Auto direkt an uns verkaufen
             </h2>
             <p className="text-stone-400 max-w-xl mx-auto">
-              Schnell, einfach und ohne Stress – dein Auto verkaufen war noch nie so unkompliziert.
+              Bewertung, Termin, Festpreis-Angebot, Auszahlung – wir wickeln den kompletten Verkauf für dich ab.
             </p>
           </div>
 
@@ -390,7 +390,7 @@ export function WhySection({ stats: _stats }: WhySectionProps) {
               NimmMeinAuto vs. Alternativen
             </h2>
             <p className="text-foreground-muted max-w-xl mx-auto">
-              Warum immer mehr Österreicher auf uns setzen.
+              Warum immer mehr Österreicher ihr Auto direkt an uns verkaufen.
             </p>
           </div>
 

@@ -20,8 +20,8 @@ export async function generateMetadata({
   const brand = getBrand(marke);
   if (!brand) return {};
 
-  const title = `${brand.name} verkaufen in Österreich · Kostenlose Bewertung`;
-  const description = `Dein ${brand.name} fair bewertet. Kostenlose Online-Bewertung in 2 Minuten, echte Angebote geprüfter Händler aus ganz Österreich.`;
+  const title = `${brand.name} verkaufen in Österreich · Wir kaufen dein ${brand.name}`;
+  const description = `Wir kaufen deinen ${brand.name} direkt – kostenlose Online-Bewertung in 2 Minuten, fairer Festpreis, sichere Auszahlung. Direktankauf in ganz Österreich.`;
 
   return {
     title,
@@ -50,9 +50,9 @@ export default async function BrandPage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: `${brand.name} Ankauf`,
+    name: `${brand.name} Direktankauf`,
     areaServed: { "@type": "Country", name: "Österreich" },
-    serviceType: "Fahrzeugbewertung und Ankaufvermittlung",
+    serviceType: "Fahrzeug-Direktankauf",
     provider: {
       "@type": "Organization",
       name: "NimmMeinAuto",
@@ -98,12 +98,11 @@ export default async function BrandPage({
             </div>
           )}
           <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-5 tracking-tight">
-            {brand.name} verkaufen<br />
-            <span className="text-amber">fair bewertet, schnell verkauft.</span>
+            Wir kaufen deinen {brand.name}<br />
+            <span className="text-amber">direkt, fair und sicher.</span>
           </h1>
           <p className="text-lg text-stone-300 mb-8 max-w-2xl">
-            Kostenlose {brand.name}-Bewertung in 2 Minuten. Geprüfte Händler aus ganz Österreich
-            legen konkrete Angebote – du entscheidest.
+            Kostenlose Online-Bewertung in 2 Minuten, persönliches Festpreis-Angebot innerhalb von 24 Stunden, Auszahlung am Tag der Übergabe – ohne Inserate, ohne Verhandlungen.
           </p>
           <Link href="/auto-bewerten">
             <Button
@@ -164,7 +163,7 @@ export default async function BrandPage({
                 </svg>
               </div>
               <h3 className="font-semibold text-foreground mb-1">Ø {brand.avgPrice ?? "marktgerecht"}</h3>
-              <p className="text-sm text-foreground-muted">Realistische {brand.name}-Marktpreise aus österreichischen Händlerdaten.</p>
+              <p className="text-sm text-foreground-muted">Realistische {brand.name}-Preise auf Basis aktueller österreichischer Marktdaten.</p>
             </div>
             <div className="p-6 bg-white rounded-xl border border-border">
               <div className="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center mb-4">
@@ -172,8 +171,8 @@ export default async function BrandPage({
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                 </svg>
               </div>
-              <h3 className="font-semibold text-foreground mb-1">Geprüfte Händler</h3>
-              <p className="text-sm text-foreground-muted">Alle Käufer sind gewerberechtlich registrierte österreichische Kfz-Betriebe.</p>
+              <h3 className="font-semibold text-foreground mb-1">Sichere Auszahlung</h3>
+              <p className="text-sm text-foreground-muted">Bezahlung per Banküberweisung am Tag der Fahrzeugübergabe – kein Bargeld-Risiko.</p>
             </div>
           </div>
         </div>

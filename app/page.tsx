@@ -177,14 +177,14 @@ export default async function HomePage() {
       },
       {
         "@type": "Service",
-        name: "Fahrzeugbewertung und Ankaufvermittlung",
+        name: "Fahrzeug-Direktankauf in Österreich",
         areaServed: { "@type": "Country", name: "Österreich" },
         provider: { "@id": "https://nimmmeinauto.at/#org" },
         offers: {
           "@type": "Offer",
           price: "0",
           priceCurrency: "EUR",
-          description: "Kostenlose, unverbindliche Fahrzeugbewertung",
+          description: "Kostenlose, unverbindliche Fahrzeugbewertung mit direktem Ankaufsangebot",
         },
       },
       {
@@ -197,14 +197,14 @@ export default async function HomePage() {
       },
       {
         "@type": "HowTo",
-        name: "Auto in 4 Schritten verkaufen – zum besten Preis",
-        description: "Kostenlose Fahrzeugbewertung und direkter Ankauf in Österreich.",
+        name: "In 4 Schritten dein Auto direkt an uns verkaufen",
+        description: "Kostenlose Online-Bewertung und direkter Ankauf durch NimmMeinAuto in Österreich.",
         totalTime: "PT2M",
         step: [
           { "@type": "HowToStep", "position": 1, name: "Fahrzeugdaten eingeben", text: "Marke, Modell, Baujahr und Zustand in 2 Minuten erfassen." },
-          { "@type": "HowToStep", "position": 2, name: "Sofortschätzung erhalten", text: "Unser System berechnet den aktuellen Marktwert deines Fahrzeugs." },
-          { "@type": "HowToStep", "position": 3, name: "Wir machen ein Angebot", text: "Unser Team prüft dein Inserat und schickt ein verbindliches Kaufangebot." },
-          { "@type": "HowToStep", "position": 4, name: "Übergabe & Auszahlung", text: "Termin vereinbaren, Auto übergeben, Geld sofort erhalten." },
+          { "@type": "HowToStep", "position": 2, name: "Online-Bewertung erhalten", text: "Du bekommst sofort eine Preiseinschätzung auf Basis aktueller Marktdaten." },
+          { "@type": "HowToStep", "position": 3, name: "Termin zur Prüfung vereinbaren", text: "Wir prüfen dein Fahrzeug bei dir vor Ort oder an einem unserer Standorte und machen dir ein verbindliches Festpreis-Angebot." },
+          { "@type": "HowToStep", "position": 4, name: "Verkaufen & sofort Geld erhalten", text: "Angebot annehmen, Auto übergeben, Auszahlung noch am selben Tag." },
         ],
       },
     ],
@@ -235,25 +235,30 @@ export default async function HomePage() {
                 <rect y="4" width="16" height="4" fill="#ffffff"/>
                 <rect y="8" width="16" height="4" fill="#ED2939"/>
               </svg>
-              Österreichs schnellste Fahrzeugbewertung
+              Direktankauf in ganz Österreich
             </span>
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6 tracking-tight">
-                Dein Auto<br />
-                <span className="text-amber">fair bewertet</span><br />
-                und sofort bezahlt – in Österreich.
+                Wir kaufen<br />
+                <span className="text-amber">dein Auto</span> –<br />
+                schnell, sicher und unkompliziert.
               </h1>
               <p className="text-lg text-stone-300 mb-8 leading-relaxed">
-                Kostenlose Schätzung in 2 Minuten. Echte Angebote von
-                <strong className="text-white"> geprüften Händlern</strong> aus ganz Österreich.
+                Erhalte online in 2 Minuten eine kostenlose Bewertung, vereinbare einen Termin und
+                <strong className="text-white"> verkaufe dein Auto direkt an uns</strong> – zum fairen Festpreis, mit sicherer Auszahlung.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 mb-8">
                 <Link href="/auto-bewerten">
                   <Button size="lg" className="bg-amber hover:bg-amber-dark text-foreground font-bold shadow-warm text-base px-8 h-12 w-full sm:w-auto">
-                    Jetzt kostenlos bewerten
+                    Auto jetzt bewerten
+                  </Button>
+                </Link>
+                <Link href="/auto-bewerten">
+                  <Button size="lg" variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 font-semibold text-base px-8 h-12 w-full sm:w-auto">
+                    Kostenloses Angebot erhalten
                   </Button>
                 </Link>
               </div>
@@ -265,7 +270,7 @@ export default async function HomePage() {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
-                  Kein Verkaufszwang
+                  Sichere Auszahlung
                 </span>
                 <span className="flex items-center gap-1.5">
                   <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/></svg>
@@ -283,7 +288,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Stats bar (live from Supabase) — 4 metrics ───────── */}
-      <section className="bg-[#1C1917] py-5 px-4 border-t border-white/5" aria-label="Plattform-Kennzahlen">
+      <section className="bg-[#1C1917] py-5 px-4 border-t border-white/5" aria-label="Unsere Kennzahlen">
         <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {[
             {
@@ -293,21 +298,9 @@ export default async function HomePage() {
                   : "12.400+",
               label: "Fahrzeuge bewertet",
             },
-            {
-              value:
-                stats.offers > 0
-                  ? `${stats.offers.toLocaleString("de-AT")}+`
-                  : "34.000+",
-              label: "Händlerangebote",
-            },
-            {
-              value:
-                stats.avgOffersPerListing > 0
-                  ? `Ø ${stats.avgOffersPerListing.toLocaleString("de-AT")}`
-                  : "Ø 2,8",
-              label: "Angebote pro Inserat",
-            },
-            { value: "Ø 94%", label: "des Schätzpreises erzielt" },
+            { value: "24 h", label: "bis zum Festpreis-Angebot" },
+            { value: "100 %", label: "kostenlos & unverbindlich" },
+            { value: "Sofort", label: "Auszahlung bei Übergabe" },
           ].map(({ value, label }) => (
             <div key={label}>
               <div className="text-xl md:text-2xl font-bold text-amber">{value}</div>
@@ -322,16 +315,16 @@ export default async function HomePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <span className="inline-block bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-3">
-              Kürzlich bewertet
+              Kürzlich angekauft
             </span>
             <h2
               id="live-beispiele-heading"
               className="text-3xl md:text-4xl font-bold text-foreground mb-3"
             >
-              Echte kürzlich bewertete Autos aus Österreich
+              Diese Autos haben wir zuletzt gekauft
             </h2>
             <p className="text-foreground-muted max-w-xl mx-auto">
-              Diese Fahrzeuge wurden kürzlich erfolgreich bewertet und Händlern angeboten.
+              Echte Fahrzeuge, die wir bewertet, geprüft und direkt vom Vorbesitzer übernommen haben – aus ganz Österreich.
             </p>
           </div>
 
@@ -356,13 +349,13 @@ export default async function HomePage() {
                       {listing.make} {listing.model} · {listing.year}
                     </span>
                   </div>
-                  {/* Already evaluated label */}
+                  {/* Already purchased label */}
                   <div className="absolute top-3 right-3">
                     <span className="inline-flex items-center gap-1 bg-green-500/90 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full">
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                       </svg>
-                      Bereits bewertet
+                      Angekauft
                     </span>
                   </div>
                 </div>
@@ -387,7 +380,7 @@ export default async function HomePage() {
                             maximumFractionDigits: 0,
                           })}
                         </div>
-                        <div className="text-foreground-muted text-xs">Schätzwert</div>
+                        <div className="text-foreground-muted text-xs">Kaufpreis</div>
                       </div>
                     )}
                   </div>
@@ -419,13 +412,13 @@ export default async function HomePage() {
               ))}
             </div>
             <h2 className="text-3xl font-bold text-foreground mb-2">Was unsere Kunden sagen</h2>
-            <p className="text-foreground-muted text-sm">Über 12.000 erfolgreiche Verkäufe in Österreich</p>
+            <p className="text-foreground-muted text-sm">Über 12.000 Fahrzeuge in Österreich direkt angekauft</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { name: "Markus R.", city: "Wien", car: "BMW 3er 2018", text: "Innerhalb von 2 Stunden hatte ich drei Angebote. Super schnell und unkompliziert! Hab 500€ mehr bekommen als erwartet.", stars: 5 },
-              { name: "Sandra M.", city: "Graz", car: "VW Golf 2020", text: "Der Prozess war total einfach und transparent. Ich wusste immer genau wo ich stehe. Klare Empfehlung!", stars: 5 },
-              { name: "Thomas K.", city: "Linz", car: "Audi A4 2017", text: "Kein Vergleich zu privaten Inseraten. Direkter, sicherer und faire Preise von echten Händlern.", stars: 5 },
+              { name: "Markus R.", city: "Wien", car: "BMW 3er 2018", text: "Online bewertet, am nächsten Tag Termin, danach sofort überwiesen bekommen. Super schnell und unkompliziert – ich hab 500 € mehr bekommen als erwartet.", stars: 5 },
+              { name: "Sandra M.", city: "Graz", car: "VW Golf 2020", text: "Der Prozess war total einfach und transparent. Festpreis, keine Verhandlungen, kein Stress – klare Empfehlung!", stars: 5 },
+              { name: "Thomas K.", city: "Linz", car: "Audi A4 2017", text: "Kein Vergleich zu privaten Inseraten. Keine Besichtigungs-Termine mit Fremden, keine Probefahrten – einfach Auto übergeben und Geld erhalten.", stars: 5 },
             ].map(({ name, city, car, text, stars }) => (
               <Card key={name} className="border hover:shadow-card transition-shadow">
                 <CardContent className="p-6">
@@ -524,9 +517,9 @@ export default async function HomePage() {
               <rect y="24" width="48" height="12" fill="#ED2939"/>
             </svg>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Bereit, dein Auto zu verkaufen?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Bereit, dein Auto direkt an uns zu verkaufen?</h2>
           <p className="text-stone-300 mb-8 text-lg">
-            Starte jetzt – kostenlos, unverbindlich, in unter 2 Minuten.
+            Kostenlose Bewertung in unter 2 Minuten. Keine Inserate. Keine Besichtigungen. Keine Verhandlungen.
           </p>
           <Link href="/auto-bewerten">
             <Button size="lg" className="bg-amber hover:bg-amber-dark text-foreground font-bold text-base px-12 h-12 shadow-warm">
@@ -552,7 +545,7 @@ export default async function HomePage() {
                 <span className="text-white font-bold">NimmMein<span className="text-primary">Auto</span></span>
               </div>
               <p className="text-xs text-stone-500 leading-relaxed">
-                Österreichs schnellste Fahrzeugbewertung. Kostenlos, unverbindlich, DSGVO-konform.
+                Wir kaufen dein Auto in ganz Österreich – direkt, fair und sicher. Kostenlos, unverbindlich, DSGVO-konform.
               </p>
             </div>
 

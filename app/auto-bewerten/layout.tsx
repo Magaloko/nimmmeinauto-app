@@ -3,12 +3,12 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Auto bewerten – kostenlos in 2 Minuten · NimmMeinAuto",
   description:
-    "Kostenlose Fahrzeugbewertung in Österreich. Marke, Modell und Kilometerstand eingeben, Marktwert erhalten und unverbindliche Händlerangebote vergleichen.",
+    "Wir kaufen dein Auto direkt. Marke, Modell und Kilometerstand eingeben, kostenlose Online-Bewertung erhalten und unverbindliches Festpreis-Angebot bekommen.",
   alternates: { canonical: "https://nimmmeinauto.at/auto-bewerten" },
   openGraph: {
     title: "Auto bewerten – kostenlos in 2 Minuten",
     description:
-      "Schätzpreis in 2 Minuten. Echte Angebote geprüfter Händler aus ganz Österreich.",
+      "Direktankauf in ganz Österreich. Online-Bewertung in 2 Minuten, Festpreis-Angebot, sichere Auszahlung.",
     url: "https://nimmmeinauto.at/auto-bewerten",
     locale: "de_AT",
     type: "website",

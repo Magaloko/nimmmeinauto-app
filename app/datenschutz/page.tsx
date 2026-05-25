@@ -21,6 +21,11 @@ export default function DatenschutzPage() {
             über Art, Umfang und Zweck der Verarbeitung personenbezogener Daten gemäß Art. 13 DSGVO.
           </p>
 
+          <div className="rounded-xl bg-amber/10 border border-amber/30 p-4 text-sm text-foreground">
+            <strong>Hinweis:</strong> Diese Datenschutzerklärung ist ein Entwurf für das Direktankauf-Modell
+            und muss vor Veröffentlichung durch eine/n Anwält:in bzw. Datenschutzbeauftragte:n geprüft werden.
+          </div>
+
           <section>
             <h2 className="text-xl font-semibold mb-3">1. Verantwortlicher</h2>
             <p className="text-foreground-muted">
@@ -32,10 +37,10 @@ export default function DatenschutzPage() {
           <section>
             <h2 className="text-xl font-semibold mb-3">2. Zwecke der Verarbeitung</h2>
             <ul className="list-disc pl-6 text-foreground-muted space-y-1">
-              <li>Durchführung der Fahrzeugbewertung</li>
-              <li>Übermittlung Ihrer Inserats-Daten an teilnehmende Händler zur Angebotserstellung</li>
-              <li>Kontaktaufnahme durch Händler zum Zweck des Fahrzeugkaufs</li>
-              <li>Erfüllung gesetzlicher Aufbewahrungspflichten</li>
+              <li>Durchführung der Fahrzeugbewertung und Erstellung unseres Ankaufs-Angebots</li>
+              <li>Kontaktaufnahme mit Ihnen zur Terminvereinbarung und Vertragsabwicklung</li>
+              <li>Abschluss, Abwicklung und Dokumentation des Kfz-Kaufvertrags mit Ihnen</li>
+              <li>Erfüllung gesetzlicher Aufbewahrungspflichten (UGB, BAO)</li>
             </ul>
           </section>
 
@@ -43,9 +48,9 @@ export default function DatenschutzPage() {
             <h2 className="text-xl font-semibold mb-3">3. Rechtsgrundlagen</h2>
             <p className="text-foreground-muted">
               Die Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO
-              (vorvertragliche Maßnahmen / Vertragserfüllung) sowie Art. 6 Abs. 1 lit. a DSGVO
-              (Einwilligung), soweit Sie uns personenbezogene Daten zur Bewertung und
-              Angebotsvermittlung übermitteln.
+              (vorvertragliche Maßnahmen / Erfüllung des Kaufvertrags mit Ihnen) sowie Art. 6 Abs. 1
+              lit. c DSGVO (Erfüllung rechtlicher Verpflichtungen). Wir geben Ihre Daten <strong>nicht</strong>
+              zu Werbe- oder Vermittlungszwecken an Dritte weiter.
             </p>
           </section>
 
@@ -61,11 +66,12 @@ export default function DatenschutzPage() {
           <section>
             <h2 className="text-xl font-semibold mb-3">5. Empfänger</h2>
             <p className="text-foreground-muted">
-              Nach Freigabe Ihres Inserats werden Fahrzeugdaten und Postleitzahl an
-              teilnehmende Kfz-Händler in Österreich weitergegeben. Kontaktdaten werden erst
-              nach Ihrer expliziten Annahme eines Angebots an den jeweiligen Händler übermittelt.
-              Hosting erfolgt durch Vercel Inc. (USA, Standardvertragsklauseln) und Supabase
-              (EU-Region).
+              Ihre Daten werden ausschließlich innerhalb der NimmMeinAuto GmbH zur Abwicklung
+              Ihres Fahrzeugverkaufs an uns verarbeitet. Eine Weitergabe an Dritte zu Werbe- oder
+              Vermittlungszwecken findet <strong>nicht</strong> statt. Auftragsverarbeiter im Sinne
+              des Art. 28 DSGVO sind: Vercel Inc. (Hosting, USA – Standardvertragsklauseln) und
+              Supabase (Datenbank, EU-Region). Eine Übermittlung an Finanzbehörden erfolgt im
+              Rahmen gesetzlicher Pflichten (z. B. Rechnungs- und Belegaufbewahrung).
             </p>
           </section>
 

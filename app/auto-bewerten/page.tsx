@@ -867,7 +867,7 @@ export default function AutoBewertenPage() {
               <div className="space-y-6">
                 <div>
                   <h2 className="text-2xl font-bold text-foreground mb-1">Kontaktdaten</h2>
-                  <p className="text-foreground-muted text-sm">Damit Händler dich kontaktieren können.</p>
+                  <p className="text-foreground-muted text-sm">Damit wir dir dein persönliches Festpreis-Angebot zuschicken können.</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   verification: {
     google: "GWkXoqnGP9eXyPVLtn25TOfzwVjAAoQlC5sy61xBCWE",
   },
-  title: "NimmMeinAuto – Auto verkaufen leicht gemacht",
-  description: "Verkaufe dein Auto sicher und zum besten Preis. Kostenlose Bewertung in 2 Minuten. Echte Händlerangebote aus ganz Österreich.",
+  title: "NimmMeinAuto – Wir kaufen dein Auto direkt",
+  description: "Wir kaufen dein Auto – schnell, sicher und unkompliziert. Kostenlose Online-Bewertung in 2 Minuten, fairer Festpreis, sichere Auszahlung. Direktankauf in ganz Österreich.",
   openGraph: {
-    title: "NimmMeinAuto – Auto verkaufen leicht gemacht",
-    description: "Kostenlose Fahrzeugbewertung in 2 Minuten. Echte Angebote von geprüften Händlern.",
+    title: "NimmMeinAuto – Wir kaufen dein Auto direkt",
+    description: "Direktankauf in ganz Österreich. Kostenlose Bewertung in 2 Minuten, Festpreis-Angebot, sichere Auszahlung. Keine Inserate, keine Verhandlungen.",
     url: "https://nimmmeinauto.at",
     siteName: "NimmMeinAuto",
     locale: "de_AT",
@@ -28,8 +28,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "NimmMeinAuto – Auto verkaufen leicht gemacht",
-    description: "Kostenlose Bewertung in 2 Minuten. Echte Händlerangebote.",
+    title: "NimmMeinAuto – Wir kaufen dein Auto direkt",
+    description: "Direktankauf in ganz Österreich. Kostenlose Bewertung, Festpreis, sichere Auszahlung.",
   },
 };
 

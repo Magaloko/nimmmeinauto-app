@@ -87,9 +87,9 @@ export default function ImpressumPage() {
           <div>
             <h2 className="text-xl font-semibold mb-2">Haftungsausschluss</h2>
             <p className="text-foreground-muted text-sm">
-              Fahrzeugbewertungen auf NimmMeinAuto sind unverbindliche Schätzungen auf Basis von Marktdaten
-              und Fahrzeugangaben. Der endgültige Verkaufspreis ergibt sich aus den Angeboten der
-              teilnehmenden Händler und einer Fahrzeugbesichtigung vor Ort.
+              Online-Bewertungen auf NimmMeinAuto sind unverbindliche Schätzungen auf Basis von Marktdaten
+              und Ihren Fahrzeugangaben. Unser verbindliches Festpreis-Angebot erstellen wir nach
+              persönlicher Begutachtung Ihres Fahrzeugs.
             </p>
           </div>
         </section>
