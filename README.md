@@ -1,39 +1,46 @@
 # nimmmeinauto-app
 
 **Status:** Prototype / MVP  
-**Demo:** https://nimmmeinauto-app.vercel.app
+**Demo:** https://nimmmeinauto-app.vercel.app  
+**Repository:** https://github.com/Magaloko/nimmmeinauto-app
 
-Next.js/Supabase-Prototyp für Auto-Anfragen mit Lead-Erfassung, Rollen/Auth-Struktur, Chat-/Session-Grundlagen und Foto-Workflows.
+nimmmeinauto-app is a Next.js/Supabase prototype for car inquiries with lead capture, role-based access, chat/session foundations and photo documentation workflows.
 
-## Zweck
+It demonstrates how a vertical lead product can guide users from an initial vehicle inquiry into structured communication and internal processing.
 
-Das Projekt testet eine schlanke digitale Prozesskette rund um Auto-Anfragen:
+## Purpose
 
-- Anfrage / Lead erfassen
-- Nutzer- und Rollenmodell
-- Chat-/Session-Struktur
-- Foto-/Dokumentations-Workflow
-- E-Mail-/Benachrichtigungsgrundlage
-- Supabase als Backend
+The project tests a lean digital workflow for car-related inquiries:
+
+- inquiry / lead capture
+- user and role model
+- authentication with Supabase
+- chat and session structure
+- photo and documentation workflow
+- email / notification foundation
+- internal status and processing logic
 
 ## Tech Stack
 
-- Next.js 15
-- React 19
-- TypeScript
-- Supabase SSR / Supabase JS
-- Tailwind CSS
-- Nodemailer
-- Zod
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 15 |
+| Frontend | React 19 |
+| Language | TypeScript |
+| Backend / Auth | Supabase SSR / Supabase JS |
+| Styling | Tailwind CSS |
+| Email | Nodemailer |
+| Validation | Zod |
+| Deployment | Vercel |
 
-## Lokale Entwicklung
+## Local Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-Danach:
+Local URL:
 
 ```text
 http://localhost:3000
@@ -41,13 +48,15 @@ http://localhost:3000
 
 ## Scripts
 
-```bash
-npm run dev
-npm run build
-npm run start
-npm run lint
-```
+| Command | Purpose |
+|---|---|
+| `npm run dev` | start local Next.js development server |
+| `npm run build` | create production build |
+| `npm run start` | start production server |
+| `npm run lint` | run lint command |
 
-## Hinweis
+## Portfolio Note
 
-Dieses Repository ist als Prototyp markiert. Für produktive Nutzung müssen Datenmodell, Auth-Regeln, Datenschutz, E-Mail-Flows und Deployment-Konfiguration final geprüft werden.
+This repository is marked as a prototype / MVP. It is suitable as a portfolio reference for vertical lead apps, photo-heavy intake flows and lightweight internal processing systems.
+
+Before production use, data model, authentication rules, privacy requirements, email flows and deployment configuration must be reviewed for the final business context.
